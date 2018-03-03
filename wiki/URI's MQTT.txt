@@ -1,0 +1,8 @@
+URI's MQTT
+#  <Útil para administrador, seguridad privada y tablero>
+/unidadResidencial/inmueble<id>/cerradura/# < Útil para propietarioInmueble >
+/unidadResidencial/inmueble<id>/cerradura/puertasAbiertas < Útil para propietarioInmueble >
+/unidadResidencial/inmueble<id>/cerradura/aperturaSospechosa < Útil para propietarioInmueble >
+/unidadResidencial/inmueble<id>/cerradura/presenciaExtraña < Útil para propietarioInmueble > 
+/unidadResidencial/inmueble<id>/cerradura/bateriaBaja <>Útil para propietarioInmueble >
+/unidadResidencial/inmueble<id>/cerradura/ingresosPermitidos <Útil para propietarioInmueble >
