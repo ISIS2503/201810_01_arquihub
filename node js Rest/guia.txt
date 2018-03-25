@@ -1,0 +1,8 @@
+https://scotch.io/tutorials/build-a-restful-api-using-node-and-express-4#our-application
+
+
+Formato de las alarmas
+  //  "name": String
+  //  "codigo": String
+  //  "descripcion": String
+  //  "date": String
