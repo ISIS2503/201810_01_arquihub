@@ -51,37 +51,119 @@ router.get('/', function(req, res) {
 // on routes that end in /bears
 // ----------------------------------------------------
 
-
 router.route('/alarmas')
 
       .get(function(req, res) {
       console.log('entró 1');
       alarmas.find({}, function finded(err, media){
           if(err){
-            console.log('errosrasfjabf')
+            console.log('error')
           };
           console.log(media);
-          res.json({media});
-        }); console.log('JUEPUTA');
+
+          var ret = [];
+
+          for(i = 0; i < media.length; i++) {
+            var m = new alarmas();
+            m.tipo = media[i].tipo;
+            m.codigo = media[i].codigo;
+            m.fecha = media[i].fecha;
+            m.descripcion = media[i].descripcion;
+            ret[i] = m;
+          }
+
+          res.json({ret});
+        }); console.log('ENCONTRÉ LAS ALARMAS');
       })
 
     .post(function(req, res) {
-
+      const dateformat = require('dateformat');
+       let today = new Date();
+       var fechita = (dateformat(today, 'dddd, mmmm dS, yyyy, h:MM:ss TT')).toString();
         var alarma = new alarmas();      // create a new instance of the Bear model
-        alarma.name = req.body.alarma;
-        alarma.descripcion = req.body.descripcion;
-        alarma.date = req.body.date;
-        alarma.codigo = req.body.codigo; // set the bears name (comes from the request)
+        alarma.tipo = req.body.tipo;
+        alarma.codigo = req.body.codigo;
+        alarma.fecha = (dateformat(new Date(), 'dddd, mmmm dS, yyyy, h:MM:ss TT')).toString();
+        alarma.descripcion = req.body.descripcion; // set the bears name (comes from the request)
 
         // save the bear and check for errors
         alarma.save(function(err) {
             if (err)
                 res.send(err);
-
-            res.json({ message: 'Alarma created!' });
+            res.json({ message: 'Alarma creada' });
         });
 
     });
+router.route('/alarmas/propietario/:idPropietario')
+
+
+      .get(function(req, res) {
+      console.log('entró 1');
+      alarmas.find(({ "propietarioInmueble": req.params.idPropietario }), function finded(err, media){
+          if(err){
+            console.log('error')
+          };
+          console.log(media);
+
+          if (media.length > 0)
+          {
+           var alarmas = [];
+
+            for(i = 0; i < media.length; i++) {
+            var m = new alarmas();
+            m.tipo = media[i].tipo;
+            m.codigo = media[i].codigo;
+            m.fecha = media[i].fecha;
+            m.descripcion = media[i].descripcion;
+            m.codigoInmueble = media[i].codigoInmueble;
+            ret[i] = m;
+          }
+          res.json({media});
+        }
+         else 
+        {
+            console.log('El propietario no tiene inmuebles');
+             res.json({error: 'El propietario no tiene inmuebles'});
+          }
+        });
+      }
+    });
+
+      router.route('/alarmas/administrador/:idUnidadResidencial')
+
+      .get(function(req, res) {
+      console.log('entró 1');
+      alarmas.find(({ "unidadResidencial": req.params.idunidadResidencial}), function finded(err, media){
+          if(err){
+            console.log('error')
+          };
+          console.log(media);
+
+          if (media.length > 0)
+          {
+           var alarmas = [];
+
+            for(i = 0; i < media.length; i++) {
+            var m = new alarmas();
+            m.tipo = media[i].tipo;
+            m.codigo = media[i].codigo;
+            m.fecha = media[i].fecha;
+            m.descripcion = media[i].descripcion;
+            m.codigoInmueble = media[i].codigoInmueble;
+            ret[i] = m;
+          }
+          res.json({media});
+        }
+         else 
+        {
+            console.log('Este administrador no cuenta con ninguna unidad residencial bajo su orden');
+             res.json({error: 'Este administrador no cuenta con ninguna unidad residencial bajo su orden'});
+          }
+        });
+      }
+    });
+
+
 // ruta de /unidadResidencial
 // ----------------------------------------------------
 router.route('/unidadResidencial')

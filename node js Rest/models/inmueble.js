@@ -4,7 +4,8 @@ var mongoose     = require('mongoose');
 var Schema       = mongoose.Schema;
 
 var inmueble   = new Schema({
-    name: String,
+    
+    idPropietario: String,
     codigo: String,
     unidad:{
       type: Schema.Types.ObjectId,

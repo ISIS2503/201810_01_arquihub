@@ -4,6 +4,8 @@ var mongoose     = require('mongoose');
 var Schema       = mongoose.Schema;
 
 var unidadResidencial   = new Schema({
+
+	idAministrador: String,
     name: String,
     codigo: String,
     inmuebles: [{
