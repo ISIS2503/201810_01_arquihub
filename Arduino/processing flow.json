@@ -1,0 +1,130 @@
+[
+    {
+        "id": "5c629b07.d6cc94",
+        "type": "tab",
+        "label": "Processing Flow ArquiHub",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "cb7e0042.34fd5",
+        "type": "mongodb out",
+        "z": "5c629b07.d6cc94",
+        "mongodb": "9d8dbdd5.8a73e",
+        "name": "Save alerta",
+        "collection": "alertas",
+        "payonly": true,
+        "upsert": false,
+        "multi": false,
+        "operation": "store",
+        "x": 970,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "ded17adc.966258",
+        "type": "json",
+        "z": "5c629b07.d6cc94",
+        "name": "Format to JSON",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 500,
+        "y": 120,
+        "wires": [
+            [
+                "6a78ea3d.3e87c4",
+                "f08dffc1.41a96"
+            ]
+        ]
+    },
+    {
+        "id": "65db0948.1727f8",
+        "type": "mqtt in",
+        "z": "5c629b07.d6cc94",
+        "name": "",
+        "topic": "unidadResidencial/inmueble/hub/cerradura/api",
+        "qos": "2",
+        "broker": "e224b328.33a96",
+        "x": 170,
+        "y": 120,
+        "wires": [
+            [
+                "ded17adc.966258",
+                "50367978.0f51a8"
+            ]
+        ]
+    },
+    {
+        "id": "50367978.0f51a8",
+        "type": "debug",
+        "z": "5c629b07.d6cc94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 500,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "6a78ea3d.3e87c4",
+        "type": "debug",
+        "z": "5c629b07.d6cc94",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 730,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "f08dffc1.41a96",
+        "type": "function",
+        "z": "5c629b07.d6cc94",
+        "name": "Add Topic",
+        "func": "var res = {};\nres.payload = msg.payload;\nres.topic = \"alertas\";\n\nreturn res;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 720,
+        "y": 120,
+        "wires": [
+            [
+                "cb7e0042.34fd5"
+            ]
+        ]
+    },
+    {
+        "id": "9d8dbdd5.8a73e",
+        "type": "mongodb",
+        "z": "",
+        "hostname": "127.0.0.1",
+        "port": "27017",
+        "db": "ArquiHub",
+        "name": ""
+    },
+    {
+        "id": "e224b328.33a96",
+        "type": "mqtt-broker",
+        "z": "",
+        "name": "",
+        "broker": "172.24.42.92",
+        "port": "8083",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": ""
+    }
+]
