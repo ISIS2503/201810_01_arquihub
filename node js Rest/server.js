@@ -84,7 +84,9 @@ router.route('/alarmas')
         alarma.tipo = req.body.tipo;
         alarma.codigo = req.body.codigo;
         alarma.fecha = (dateformat(new Date(), 'dddd, mmmm dS, yyyy, h:MM:ss TT')).toString();
-        alarma.descripcion = req.body.descripcion; // set the bears name (comes from the request)
+        alarma.descripcion = req.body.descripcion; 
+        alarma.unidadResidencial = req.body.unidadResidencial;
+        alarma.propietarioInmueble = req.body.propietarioInmueble;
 
         // save the bear and check for errors
         alarma.save(function(err) {
@@ -99,15 +101,14 @@ router.route('/alarmas/propietario/:idPropietario')
 
       .get(function(req, res) {
       console.log('entró 1');
-      alarmas.find(({ "propietarioInmueble": req.params.idPropietario }), function finded(err, media){
+      alarmas.find(({ 'propietarioInmueble': req.params.idPropietario }), function finded(err, media){
           if(err){
             console.log('error')
           };
-          console.log(media);
 
           if (media.length > 0)
           {
-           var alarmas = [];
+           var ret = [];
 
             for(i = 0; i < media.length; i++) {
             var m = new alarmas();
@@ -115,10 +116,10 @@ router.route('/alarmas/propietario/:idPropietario')
             m.codigo = media[i].codigo;
             m.fecha = media[i].fecha;
             m.descripcion = media[i].descripcion;
-            m.codigoInmueble = media[i].codigoInmueble;
+            m.propietarioInmueble = media[i].propietarioInmueble;
             ret[i] = m;
           }
-          res.json({media});
+          res.json({ret});
         }
          else 
         {
@@ -126,14 +127,13 @@ router.route('/alarmas/propietario/:idPropietario')
              res.json({error: 'El propietario no tiene inmuebles'});
           }
         });
-      }
     });
 
-      router.route('/alarmas/administrador/:idUnidadResidencial')
+ router.route('/alarmas/administrador/:idUnidadResidencial')
 
       .get(function(req, res) {
-      console.log('entró 1');
-      alarmas.find(({ "unidadResidencial": req.params.idunidadResidencial}), function finded(err, media){
+      console.log('entró al administrador');
+      alarmas.find(({ 'unidadResidencial': req.params.idUnidadResidencial}), function finded(err, media){
           if(err){
             console.log('error')
           };
@@ -141,28 +141,28 @@ router.route('/alarmas/propietario/:idPropietario')
 
           if (media.length > 0)
           {
-           var alarmas = [];
+           var ret = [];
 
-            for(i = 0; i < media.length; i++) {
+            for(j = 0; j < media.length; j++) {
             var m = new alarmas();
-            m.tipo = media[i].tipo;
-            m.codigo = media[i].codigo;
-            m.fecha = media[i].fecha;
-            m.descripcion = media[i].descripcion;
-            m.codigoInmueble = media[i].codigoInmueble;
-            ret[i] = m;
+            m.tipo = media[j].tipo;
+            m.codigo = media[j].codigo;
+            m.fecha = media[j].fecha;
+            m.descripcion = media[j].descripcion;
+            m.unidadResidencial = media[j].unidadResidencial;
+            ret[j] = m;
+            console.log("sapoperro");
           }
-          res.json({media});
+          console.log("sapoperro5");
+          res.json({ret});
         }
          else 
         {
-            console.log('Este administrador no cuenta con ninguna unidad residencial bajo su orden');
-             res.json({error: 'Este administrador no cuenta con ninguna unidad residencial bajo su orden'});
+            console.log('Esta unidad residencial no tiene ningún inmueble');
+             res.json({error: 'Esta unidad residencial no tiene ningún inmueble'});
           }
         });
-      }
     });
-
 
 // ruta de /unidadResidencial
 // ----------------------------------------------------

@@ -7,7 +7,7 @@ var alarmas   = new Schema({
     
     name: String,
     codigo: String,
-    date: String,
+    fecha: String,
     descripcion: String,
     unidadResidencial: Number,
     propietarioInmueble: Number,
