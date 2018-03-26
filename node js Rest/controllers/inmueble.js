@@ -20,6 +20,13 @@ module.exports = {
     var result =await Inmueble.findByIdAndUpdate(inmuebleId,newInmueble);
     res.status(200).json({success:true});
   },
+  editarEstadoInmueble: async(req,res,next)=>{
+    var {inmuebleId}=req.params;
+    var inmueble = await Inmueble.findById(inmuebleId);
+    inmueble.estado = req.body.estado;
+    var result =await Inmueble.findByIdAndUpdate(inmuebleId,inmueble);
+    res.status(200).json({success:true});
+  },
   darInmuebleHubs: async(req,res,next) =>{
     var {inmuebleId}=req.params;
     var inmueble = await Inmueble.findById(inmuebleId).populate('hubs');

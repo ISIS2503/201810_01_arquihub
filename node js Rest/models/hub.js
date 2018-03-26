@@ -6,6 +6,7 @@ var Schema       = mongoose.Schema;
 var hub   = new Schema({
     name: String,
     codigo: String,
+    estado: Boolean,
     inmueble:{
       type: Schema.Types.ObjectId,
       ref:'inmueble'

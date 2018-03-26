@@ -30,6 +30,13 @@ module.exports = {
     var result =await UnidadResidencial.findByIdAndUpdate(unidadId,newUnidad);
     res.status(200).json({success:true});
   },
+  editarEstadoUnidad: async(req,res,next)=>{
+    var {unidadId}=req.params;
+    var unidad = await UnidadResidencial.findById(unidadId);
+    unidad.estado = req.body.estado;
+    var result =await UnidadResidencial.findByIdAndUpdate(unidadId,unidad);
+    res.status(200).json({success:true});
+  },
   borrarUnidad: async(req,res,next)=>{
     var {unidadId}=req.params;
     var unidad = await UnidadResidencial.remove(unidadId);

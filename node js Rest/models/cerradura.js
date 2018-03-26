@@ -6,6 +6,7 @@ var Schema       = mongoose.Schema;
 var cerradura   = new Schema({
     name: String,
     codigo: String,
+    estado: Boolean,
     hub:{
       type: Schema.Types.ObjectId,
       ref:'hub'

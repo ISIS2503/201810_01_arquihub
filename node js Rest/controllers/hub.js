@@ -19,6 +19,13 @@ module.exports = {
     var result =await Hub.findByIdAndUpdate(hubId,newHub);
     res.status(200).json({success:true});
   },
+  editarEstadoHub: async(req,res,next)=>{
+    var {hubId}=req.params;
+    var hub = await Hub.findById(hubId);
+    hub.estado = req.body.estado;
+    var result =await Hub.findByIdAndUpdate(hubId,hub);
+    res.status(200).json({success:true});
+  },
   darHubCerraduras: async(req,res,next) =>{
     var {hubId}=req.params;
     var hub = await Hub.findById(hubId).populate('cerraduras');

@@ -4,9 +4,9 @@ var mongoose     = require('mongoose');
 var Schema       = mongoose.Schema;
 
 var inmueble   = new Schema({
-    
-    idPropietario: String,
+    name: String,
     codigo: String,
+    estado: Boolean,
     unidad:{
       type: Schema.Types.ObjectId,
       ref:'unidadResidencial'

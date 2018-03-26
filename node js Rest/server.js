@@ -13,10 +13,13 @@ var cerraduraController     = require('./controllers/cerradura');
 var express    = require('express');        // call express
 var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
-
 var mongoose   = require('mongoose');
 var url = 'mongodb://localhost:27017/ArquiHub';
+var mqtt = require('mqtt')                  // importar mqtt
+var client  = mqtt.connect('mqtt:172.24.42.92:8083') ///// FALTA CONFIGURAR ESTO, IP de donde está alojado el MQTT
 
+//CONEXIÓN A BASE DE DATOS
+// =================================================================================
 mongoose.connect(url, function(err, db) {
   if (err) throw err;
   console.log("Database joined");
@@ -29,6 +32,35 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 var port = process.env.PORT || 8080;        // set our port
+
+// CONEXION A TOPICO MQTT
+// ==============================================================================
+client.on('connect', function () {   //Cuando se conecte
+  client.subscribe('unidadResidencial/inmueble/hub/cerradura')
+  client.publish('unidadResidencial/inmueble/hub/cerradura/api')
+})
+
+client.on('message', function (topic, message) { //Cuando haya un mensaje
+  //message is Buffer
+
+   var alarma = new alarmas();      // create a new instance of the Bear model
+   var obj = JSON.parse(message);
+   alarma.tipo = obj.body.tipo;
+   alarma.codigo = obj.body.codigo;
+   alarma.descripcion = obj.body.descripcion;
+   alarma.unidadResidencial = obj.body.unidadResidencial;
+   alarma.propietarioInmueble = obj.body.propietarioInmueble;
+   alarma.cerradura = obj.body.cerradura;
+  //save the bear and check for errors
+  alarma.save(function(err) {
+     if (err)
+         res.send(err);
+
+     res.json({ message: 'Alarma created!' });
+  });
+  console.log(message.toString())
+  client.end()
+})
 
 // ROUTES FOR OUR API
 // =============================================================================
@@ -48,8 +80,9 @@ router.get('/', function(req, res) {
 
 // more routes for our API will happen here
 
-// on routes that end in /bears
+// on routes that end in /ALARMAS
 // ----------------------------------------------------
+
 
 router.route('/alarmas')
 
@@ -84,9 +117,10 @@ router.route('/alarmas')
         alarma.tipo = req.body.tipo;
         alarma.codigo = req.body.codigo;
         alarma.fecha = (dateformat(new Date(), 'dddd, mmmm dS, yyyy, h:MM:ss TT')).toString();
-        alarma.descripcion = req.body.descripcion; 
+        alarma.descripcion = req.body.descripcion;
         alarma.unidadResidencial = req.body.unidadResidencial;
         alarma.propietarioInmueble = req.body.propietarioInmueble;
+        alarma.cerradura = req.body.cerradura;
 
         // save the bear and check for errors
         alarma.save(function(err) {
@@ -121,7 +155,7 @@ router.route('/alarmas/propietario/:idPropietario')
           }
           res.json({ret});
         }
-         else 
+         else
         {
             console.log('El propietario no tiene inmuebles');
              res.json({error: 'El propietario no tiene inmuebles'});
@@ -129,7 +163,7 @@ router.route('/alarmas/propietario/:idPropietario')
         });
     });
 
- router.route('/alarmas/administrador/:idUnidadResidencial')
+router.route('/alarmas/administrador/:idUnidadResidencial')
 
       .get(function(req, res) {
       console.log('entró al administrador');
@@ -156,14 +190,13 @@ router.route('/alarmas/propietario/:idPropietario')
           console.log("sapoperro5");
           res.json({ret});
         }
-         else 
+         else
         {
             console.log('Esta unidad residencial no tiene ningún inmueble');
              res.json({error: 'Esta unidad residencial no tiene ningún inmueble'});
           }
         });
     });
-
 // ruta de /unidadResidencial
 // ----------------------------------------------------
 router.route('/unidadResidencial')
@@ -173,6 +206,8 @@ router.route('/unidadResidencial/:unidadId')
     .get(unidadController.darUnidad)
     .put(unidadController.editarUnidad)
     .delete(unidadController.borrarUnidad);
+router.route('/unidadResidencial/:unidadId/estado')
+    .put(unidadController.editarEstadoUnidad);
 router.route('/unidadResidencial/:unidadId/inmuebles')
     .get(unidadController.darUnidadInmuebles)
     .post(unidadController.nuevoUnidadInmueble);
@@ -183,6 +218,8 @@ router.route('/inmuebles')
 router.route('/inmuebles/:inmuebleId')
     .get(inmuebleController.darInmueble)
     .put(inmuebleController.editarInmueble);
+router.route('/inmuebles/:inmuebleId/estado')
+    .put(inmuebleController.editarEstadoInmueble);
 router.route('/inmuebles/:inmuebleId/hubs')
     .get(inmuebleController.darInmuebleHubs)
     .post(inmuebleController.nuevoInmuebleHub);
@@ -193,6 +230,8 @@ router.route('/hubs')
 router.route('/hubs/:hubId')
     .get(hubController.darHub)
     .put(hubController.editarHub);
+router.route('/hubs/:hubId/estado')
+    .put(hubController.editarEstadoHub);
 router.route('/hubs/:hubId/cerradura')
     .get(hubController.darHubCerraduras)
     .post(hubController.nuevoHubCerradura);
@@ -203,6 +242,8 @@ router.route('/cerraduras')
 router.route('/cerraduras/:cerraduraId')
     .get(cerraduraController.darCerradura)
     .put(cerraduraController.editarCerradura);
+router.route('/cerraduras/:cerraduraId/estado')
+    .put(cerraduraController.editarEstadoCerradura);
 
 
 // REGISTER OUR ROUTES -------------------------------

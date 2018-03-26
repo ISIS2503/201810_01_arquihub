@@ -138,7 +138,6 @@ void loop() {
     digitalWrite(ledPin, HIGH);  // turn LED ON
     if (pirState == LOW) {
       // we have just turned on
-      Serial.println("Movimiento detectado");
       // We only want to print on the output change, not state
       pirState = HIGH;
     }
@@ -146,7 +145,6 @@ void loop() {
     digitalWrite(ledPin, LOW); // turn LED OFF
     if (pirState == HIGH){
       // we have just turned of
-      Serial.println("Movimiento terminado");
       // We only want to print on the output change, not state
       pirState = LOW;
     }
@@ -160,7 +158,8 @@ void loop() {
     if((millis()-currTimeBattery)>=15000) {
       currTimeBattery=millis();
       setColor(255, 0, 0);
-      Serial.println("Alerta: Bateria Baja");
+      Serial.println("{\"tipo\":\"Alerta\",\"codigo\":\"err1\",\"descripcion\":\"Bateria baja \",\"unidadResidencial\":\"unidad1\",\"propietarioInmueble\":\"inmueble1\",\"cerradura\":\"Cerradura1\"}");
+
       delay(2000);
       setColor(0, 0, 255);
     } 
@@ -180,7 +179,6 @@ void loop() {
       setColor(0, 255, 0);
       open = true;
       attempts = 0;
-      Serial.println("Puerta abierta");
     }
   }
   else if(buttonState) {
@@ -188,7 +186,6 @@ void loop() {
       setColor(0, 0, 255);
       open = false;
       buttonState = false;
-      Serial.println("Puerta Cerrada");
     }
   }
   //===================== keypad actions ===============
@@ -200,7 +197,6 @@ void loop() {
         setColor(0, 0, 255);
         block=false;
         attempts=0;
-        Serial.println("Teclado desbloqueado");
       }
   }
   else {
@@ -211,20 +207,17 @@ void loop() {
     //Verification of input and appended value
     if (customKey) {  
       currentKey+=String(customKey);
-      Serial.println(currentKey);
     }
   
     //If the current key contains '*' and door is open
     if(open && currentKey.endsWith("*")) {
       setColor(0, 0, 255);
       open = false;
-      Serial.println("Puerta Cerrada");
       currentKey = "";
     }
     //If the current key contains '#' reset attempt
     if(currentKey.endsWith("#")&&currentKey.length()<=KEY[0].length()) {
       currentKey = "";
-      Serial.println("Clave borrada");
     }             
   
       //If current key matches the key length
@@ -236,7 +229,6 @@ void loop() {
           currTime = millis();
           setColor(0, 255, 0);
           open = true;
-          Serial.println("Puerta abierta");
           attempts = 0;
           correct=true;
         }
@@ -247,22 +239,23 @@ void loop() {
         setColor(255, 0, 0);
         delay(1000);
         setColor(0, 0, 255);
-        Serial.println("Alerta: Apertura no permitida. Intentos: "+String(attempts));
+        Serial.println("{\"tipo\":\"Alerta\",\"codigo\":\"err1\",\"descripcion\":\"Apertura no permitida. Intentos: "+String(attempts))+" \",\"unidadResidencial\":\"unidad1\",\"propietarioInmueble\":\"inmueble1\",\"cerradura\":\"Cerradura1\"}");
       }
     }else if(currentKey.length()> KEY[0].length()){
-      Serial.println("Puerta abierta");
     }
     if(attempts>=maxAttempts) {
       block = true;
       currTimeKeypad = millis();
       setColor(255,0,0);
-      Serial.println("Alerta: Apertura sospechosa");
+      Serial.println("{\"tipo\":\"Alerta\",\"codigo\":\"err1\",\"descripcion\":\"Apertura sospechosa \",\"unidadResidencial\":\"unidad1\",\"propietarioInmueble\":\"inmueble1\",\"cerradura\":\"Cerradura1\"}");
+
     }
   }
   if(open){
     if((millis()-currTime)>=15000) {
       setColor(255, 0, 0);
-      Serial.println("Alerta: Puerta abierta");
+      Serial.println("{\"tipo\":\"Alerta\",\"codigo\":\"err1\",\"descripcion\":\"Puerta abierta \",\"unidadResidencial\":\"unidad1\",\"propietarioInmueble\":\"inmueble1\",\"cerradura\":\"Cerradura1\"}");
+
     } 
   }
 
