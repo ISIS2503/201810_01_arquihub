@@ -9,6 +9,7 @@ var unidadController     = require('./controllers/unidadResidencial');
 var inmuebleController     = require('./controllers/inmueble');
 var hubController     = require('./controllers/hub');
 var cerraduraController     = require('./controllers/cerradura');
+var claveController = require('./controllers/clave');
 
 var express    = require('express');        // call express
 var app        = express();                 // define our app using express
@@ -16,7 +17,7 @@ var bodyParser = require('body-parser');
 var mongoose   = require('mongoose');
 var url = 'mongodb://localhost:27017/ArquiHub';
 var mqtt = require('mqtt')                  // importar mqtt
-var client  = mqtt.connect('mqtt:172.24.42.92:8083') ///// FALTA CONFIGURAR ESTO, IP de donde está alojado el MQTT
+var client  = mqtt.connect('mqtt://172.24.42.92:8083') ///// FALTA CONFIGURAR ESTO, IP de donde está alojado el MQTT
 
 //CONEXIÓN A BASE DE DATOS
 // =================================================================================
@@ -24,7 +25,7 @@ mongoose.connect(url, function(err, db) {
   if (err) throw err;
   console.log("Database joined");
 });
-console.log(mongoose.connection.readyState);
+//console.log(mongoose.connection.readyState + "acá");  //Estado de la conexión con MongoDB
 var db = mongoose.connection;
 // configure app to use bodyParser()
 // this will let us get the data from a POST
@@ -36,13 +37,23 @@ var port = process.env.PORT || 8080;        // set our port
 // CONEXION A TOPICO MQTT
 // ==============================================================================
 client.on('connect', function () {   //Cuando se conecte
-  client.subscribe('unidadResidencial/inmueble/hub/cerradura')
-  client.publish('unidadResidencial/inmueble/hub/cerradura/api')
+  console.log('Se conectó a MQTT');
+  client.subscribe('claves')
+  client.subscribe('pruebaMQTT')
+  client.publish('pruebaMQTT', 'Prueba MQTT Correcta')
+  client.subscribe('alarmas')
+
+  //client.publish('unidadResidencial/inmueble/hub/cerradura/api')
 })
 
 client.on('message', function (topic, message) { //Cuando haya un mensaje
   //message is Buffer
-
+  if(topic == 'pruebaMQTT')
+  {
+    console.log('Topico: '+ topic);
+  }
+  else if(topic == 'alarmas'){
+    console.log('Topico: ' + topic);
    var alarma = new alarmas();      // create a new instance of the Bear model
    var obj = JSON.parse(message);
    alarma.tipo = obj.body.tipo;
@@ -58,8 +69,13 @@ client.on('message', function (topic, message) { //Cuando haya un mensaje
 
      res.json({ message: 'Alarma created!' });
   });
-  console.log(message.toString())
-  client.end()
+}
+else //if(topic == 'claves')
+{
+  console.log('Topico: '+ topic)
+}
+  console.log('Mensaje:  ' + message.toString())
+
 })
 
 // ROUTES FOR OUR API
@@ -69,7 +85,7 @@ var router = express.Router();              // get an instance of the express Ro
 // middleware to use for all requests
 router.use(function(req, res, next) {
     // do logging
-    console.log('Something is happening.');
+    console.log('Something is happening: '+ req.path+ ' ' +req.method);
     next(); // make sure we go to the next routes and don't stop here
 });
 
@@ -197,6 +213,23 @@ router.route('/alarmas/administrador/:idUnidadResidencial')
           }
         });
     });
+
+//ruta para claves
+router.route('/claves')
+    .get(claveController.claves)
+    .post(claveController.nuevaClave)
+    .delete(claveController.deleteClaves);
+router.route('/claves/:claveId')
+    .delete(claveController.deleteClave)
+    .put(claveController.editclave);
+
+
+
+
+
+
+
+
 // ruta de /unidadResidencial
 // ----------------------------------------------------
 router.route('/unidadResidencial')
