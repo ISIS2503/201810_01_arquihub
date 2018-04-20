@@ -6,3 +6,13 @@ Formato de las alarmas
   //  "codigo": String
   //  "descripcion": String
   //  "date": String
+
+
+  //Formato de la publicación de las claves
+
+   //  POST ==========  POST:index;clave$
+
+   // PUT ============  PUT:index;clave$
+
+   // DELETE =========  DELETE:index$
+   // DELETE =========  DELETEALL$
