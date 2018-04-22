@@ -21,7 +21,7 @@ module.exports = {
   var options = { method: 'POST',
   url: 'https://arquihub.auth0.com/dbconnections/signup',
   headers: { 'content-type': 'application/json' },
-  body: 
+  body:
    {
      client_id: '4J0_qCiehUxj8hJIZbg5SbSBUUpHdoWA',
      email:emailP,
@@ -35,7 +35,6 @@ request(options, function (error, response, body) {
   console.log(body);
 });
 
-    var usuario = await newUsario.save();
     res.status(201).json(usuario);
   },
   darUsuario: async(req,res,next) =>{

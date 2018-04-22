@@ -224,11 +224,11 @@ router.route('/claves')
 router.route('/claves/:claveId')
     .delete(claveController.deleteClave)
     .put(claveController.editclave);
-    
+
 // ruta de usuarios
 // ----------------------------------------------------
 router.route('/usuarios')
-    .get(usuarioController.darUsuarios);
+    .get(usuarioController.darUsuarios)
     .post(usuarioController.nuevoUsuario);
 router.route('/usuarios/:userId')
     .get(usuarioController.darUsuario)
@@ -254,6 +254,7 @@ router.route('/unidadResidencial/:unidadId/estado')
 router.route('/unidadResidencial/:unidadId/inmuebles')
     .get(unidadController.darUnidadInmuebles)
     .post(unidadController.nuevoUnidadInmueble);
+
 // ruta de /inmuebles
 // ----------------------------------------------------
 router.route('/inmuebles')
