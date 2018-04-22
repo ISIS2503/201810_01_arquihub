@@ -1,15 +1,13 @@
-
 #include <PubSubClient.h>
 #include <ESP8266WiFi.h>
 
-
 //DEFINES
-#define TOPIC_SUBSCRIBE        "unidadResidencial/inmueble/hub/cerradura/api"
+#define TOPIC_SUBSCRIBE        "claves"
 #define TOPIC_PUBLISH          "unidadResidencial/inmueble/hub/cerradura"
-#define SIZE_BUFFER_DATA       50
+#define SIZE_BUFFER_DATA       60
 
 //VARIABLES
-const char* idDevice = "ISIS2503";
+const char* idDevice = "ArquiHub";
 boolean     stringComplete = false;
 boolean     init_flag = false;
 String      inputString = "";
@@ -24,28 +22,29 @@ const char* ssid = "Rodriguez Gonzalez";
 const char* password = "1234rogo";
 
 // CONFIG MQTT
-IPAddress serverMQTT (172,24,42,92);
-const uint16_t portMQTT = 8088;
+IPAddress serverMQTT (192,168,0,105);
+const uint16_t portMQTT = 8083;
 // const char* usernameMQTT = "admin";
 // const char* passwordMQTT = "admin";
 
 void connectWIFI() {
   // Conectar a la red WiFi
-  Serial.println();
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
+//  Serial.println();
+//  Serial.print("Connecting to ");
+//  Serial.println(ssid);
 
   if(WiFi.status() != WL_CONNECTED) {
     WiFi.begin(ssid, password);
+    delay(100);
   }
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
-    Serial.print(".");
+//    Serial.print(".");
   }
-  Serial.println("");
-  Serial.println("WiFi connected");
-  Serial.println(WiFi.localIP());
+//  Serial.println("");
+  Serial.println("connected$");
+//  Serial.println(WiFi.localIP());
 }
 
 void reconnectWIFI() {
@@ -75,17 +74,17 @@ void setup() {
 }
 
 void processData() {
+  boolean conectMQTT;
   if (WiFi.status() == WL_CONNECTED) {
     if(init_flag == false) {
       init_flag = true;
 
-      boolean conectMQTT = false;
+      conectMQTT= false;
       if (!clientMQTT.connected()) {
         // if (!clientMQTT.connect(idDevice, usernameMQTT, passwordMQTT)) {
-        if (!clientMQTT.connect(idDevice)) {
-          conectMQTT = false;
+        if (clientMQTT.connect(idDevice)) {
+          conectMQTT = true;
         }
-        conectMQTT = true;
       }
       else {
         conectMQTT = true;
@@ -93,16 +92,20 @@ void processData() {
 
       if(conectMQTT) {
         if(clientMQTT.subscribe(TOPIC_SUBSCRIBE)) {
-          // Serial.println("Subscribe OK");
+          Serial.println("subscribed$");
         }
       }
     }
-
     if (stringComplete && clientMQTT.connected()) {
       if(clientMQTT.publish(TOPIC_PUBLISH, bufferData)) {
         inputString = "";
         stringComplete = false;
       }
+      else
+      {
+        inputString = "";
+        stringComplete = false;
+       }
       init_flag = false;
     }
   }
@@ -121,10 +124,16 @@ void receiveData() {
     inputString += inChar;
     // if the incoming character is a newline, set a flag
     // so the main loop can do something about it:
-    if (inChar == '\n') {
+    if (inChar == '}') {
       inputString.toCharArray(bufferData, SIZE_BUFFER_DATA);
       stringComplete = true;
     }
+  }
+  if(inputString != ""){
+    Serial.println(inputString);
+      if(!stringComplete){
+          inputString="";
+        }
   }
 }
 
@@ -132,3 +141,4 @@ void loop() {
   receiveData();
   processData();
 }
+

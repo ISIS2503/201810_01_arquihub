@@ -1,0 +1,16 @@
+{
+"cod":"1",
+"ur":"2",
+"did":"1",
+"cant": "1"
+}
+
+
+1: Apertura no permitida
+2: Apertura sospechosa
+3: Puerta abierta
+4: Bateria Baja
+cod: codigo
+ur: Unidad Residencial
+did: Id del dispositivo
+cant: numero de intentos fallidos *opcional
