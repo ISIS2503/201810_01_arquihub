@@ -51,14 +51,20 @@ const int BATTERY_PIN = A0;
 
 //Current battery charge
 double batteryCharge;
-//====================== Wifi ===================
+//====================== Wifi module ===================
 
+//Battery measure pin
+const int wifiPin = 24;
+boolean     stringComplete = false;
+String      inputString = "";
 
 //====================== keyboard ===============
 #include <Keypad.h>
+#include <EEPROM.h>
 
-//Specified password
-const String KEY[3] = {"1234","1111","4321"};
+struct Clave {
+  char name[4];
+};
 
 //Keypad rows
 const byte ROWS = 4; 
@@ -115,12 +121,20 @@ void setup() {
   pinMode(R_LED_PIN, OUTPUT);   // declare LED RGB red
   pinMode(G_LED_PIN, OUTPUT);   // declare LED RGB green
   pinMode(B_LED_PIN, OUTPUT);   // declare LED RGB blue
+  
   pinMode(CONTACT_PIN,INPUT);
+  
   pinMode(ledPin, OUTPUT);      // declare LED as output
-  pinMode(inputPin, INPUT);     // declare sensor as input
   digitalWrite(ledPin, LOW);
-  pinMode(BATTERY_LED,OUTPUT);  // Ouput pin definition for BATTERY_LED
+  pinMode(inputPin, INPUT);     // declare sensor as input
+  
+  pinMode(BATTERY_LED,OUTPUT);
+  digitalWrite(BATTERY_LED, LOW);  // Ouput pin definition for BATTERY_LED
   pinMode(BATTERY_PIN,INPUT);   //Input pin definition for battery measure
+  
+  pinMode(wifiPin, OUTPUT);      // declare LED as output
+  digitalWrite(wifiPin, LOW);
+  
   buttonState = false;
   setColor(0, 0, 255);
   currentKey = "";
@@ -158,10 +172,15 @@ void loop() {
     if((millis()-currTimeBattery)>=15000) {
       currTimeBattery=millis();
       setColor(255, 0, 0);
-      Serial.println("{\"tipo\":\"Alerta\",\"codigo\":\"err1\",\"descripcion\":\"Bateria baja \",\"unidadResidencial\":\"unidad1\",\"propietarioInmueble\":\"inmueble1\",\"cerradura\":\"Cerradura1\"}");
+      Serial.println("{\"cod\":\"4\",\"ur\":\"2\",\"did\":\"1\"}");
 
       delay(2000);
-      setColor(0, 0, 255);
+      if(open){
+        setColor(0, 255, 0);
+      }
+      else{
+        setColor(0, 0, 255);
+       }
     } 
     digitalWrite(BATTERY_LED,HIGH);
     
@@ -216,49 +235,46 @@ void loop() {
       currentKey = "";
     }
     //If the current key contains '#' reset attempt
-    if(currentKey.endsWith("#")&&currentKey.length()<=KEY[0].length()) {
+    if(currentKey.endsWith("#")&&currentKey.length()<=4) {
       currentKey = "";
     }             
   
       //If current key matches the key length
-      if (currentKey.length()== KEY[0].length() && !open) {
-       boolean correct=false;
-       for(int i=0; i < 3 && !correct; i++){ 
-        if(currentKey == KEY[i]) {
-          // se abre la cerradura
-          currTime = millis();
-          setColor(0, 255, 0);
-          open = true;
-          attempts = 0;
-          correct=true;
-        }
+    if (currentKey.length()== 4 && !open) {
+      
+      if(compareKey(currentKey)) {
+        // se abre la cerradura
+        currTime = millis();
+        setColor(0, 255, 0);
+        open = true;
+        attempts = 0;
       }
-      if(!correct) {
+      else {
         attempts++;
         currentKey = "";
         setColor(255, 0, 0);
         delay(1000);
         setColor(0, 0, 255);
-        Serial.println("{\"tipo\":\"Alerta\",\"codigo\":\"err1\",\"descripcion\":\"Apertura no permitida. Intentos: "+String(attempts))+" \",\"unidadResidencial\":\"unidad1\",\"propietarioInmueble\":\"inmueble1\",\"cerradura\":\"Cerradura1\"}");
+        Serial.println("{\"cod\":\"1\",\"ur\":\"2\",\"did\":\"1\",\"cant\":\""+String(attempts)+"\"}");
       }
-    }else if(currentKey.length()> KEY[0].length()){
     }
     if(attempts>=maxAttempts) {
       block = true;
       currTimeKeypad = millis();
       setColor(255,0,0);
-      Serial.println("{\"tipo\":\"Alerta\",\"codigo\":\"err1\",\"descripcion\":\"Apertura sospechosa \",\"unidadResidencial\":\"unidad1\",\"propietarioInmueble\":\"inmueble1\",\"cerradura\":\"Cerradura1\"}");
+      Serial.println("{\"cod\":\"2\",\"ur\":\"2\",\"did\":\"1\"}");
 
     }
   }
   if(open){
     if((millis()-currTime)>=15000) {
       setColor(255, 0, 0);
-      Serial.println("{\"tipo\":\"Alerta\",\"codigo\":\"err1\",\"descripcion\":\"Puerta abierta \",\"unidadResidencial\":\"unidad1\",\"propietarioInmueble\":\"inmueble1\",\"cerradura\":\"Cerradura1\"}");
+      Serial.println("{\"cod\":\"3\",\"ur\":\"2\",\"did\":\"1\"}");
 
     } 
   }
-
+  receiveData();
+  servicios();
   delay(100);
 }
 // ===================== Color ================
@@ -268,5 +284,136 @@ void setColor(int redValue, int greenValue, int blueValue) {
   analogWrite(G_LED_PIN, greenValue);
   analogWrite(B_LED_PIN, blueValue);
 }
+// ===================== Claves ================
+void servicios(){
+  if(stringComplete){
+      stringComplete = false;
+      String results[3];
+      processCommand(results, inputString);
+      inputString="";
+      if(results[0]=="POST"){
+          addPassword(results[2].toInt(), results[1].toInt());
+        }
+      else if(results[0]=="PUT"){
+          updatePassword(results[2].toInt(), results[1].toInt());
+        }
+      else if(results[0]=="DELETE"){
+          deletePassword(results[1].toInt());
+        }
+      else if(results[0]=="DELETEALL"){
+          deleteAllPasswords();
+        }
+      else if(results[0]=="connected"){
+          digitalWrite(wifiPin, HIGH);
+            delay(500);
+          digitalWrite(wifiPin, LOW);
+          
+        }
+      else if(results[0]=="subscribed"){
+          digitalWrite(wifiPin, HIGH);       
+        }     
+    }
+  }
+void receiveData() {
+  while (Serial.available()) {
+    // get the new byte:
+    char inChar = (char)Serial.read();
+    // add it to the inputString:
+    
+    // if the incoming character is a newline, set a flag
+    // so the main loop can do something about it:
+    if (inChar == '$') {
+      stringComplete = true;
+      break;
+    }
+    else{
+      inputString += inChar;
+      }
+  }
+  if(inputString != ""){
+    Serial.println(inputString);
+     if(!stringComplete){
+          inputString="";
+        }
+  }
+}
 
+void processCommand(String* result, String command) {
+  char buf[command.length()+1];
+  String vars = command;
+  vars.toCharArray(buf, command.length()+1);
+  char *p = buf;
+  char *str;
+  int i = 0;
+  while ((str = strtok_r(p, ";", &p)) != NULL) {
+    // delimiter is the semicolon
+    result[i] = str;
+    i++;
+  }
+}
 
+// Method that compares a key with stored keys
+boolean compareKey(String key) {
+  int acc = 3;
+  int codif, arg0, arg1; 
+  for(int i=0; i<3; i++) {
+    codif = EEPROM.read(i);
+    while(codif!=0) {
+      if(codif%2==1) {
+        arg0 = EEPROM.read(acc);
+        arg1 = EEPROM.read(acc+1)*256;
+        arg1+= arg0;
+        if(String(arg1)==key) {
+          return true;
+        }
+      }
+      acc+=2;
+      codif>>=1;
+    }
+    acc=(i+1)*16+3;
+  }
+  return false;
+}
+
+//Method that adds a password in the specified index
+void addPassword(int val, int index) {
+  byte arg0 = val%256;
+  byte arg1 = val/256;
+  EEPROM.write((index*2)+3,arg0);
+  EEPROM.write((index*2)+4,arg1);
+  byte i = 1;
+  byte location = index/8;
+  byte position = index%8;
+  i<<=position;
+  byte j = EEPROM.read(location);
+  j |= i;
+  EEPROM.write(location,j);
+}
+
+//Method that updates a password in the specified index
+void updatePassword(int val, int index) {
+  byte arg0 = val%256;
+  byte arg1 = val/256;
+  EEPROM.write((index*2)+3,arg0);
+  EEPROM.write((index*2)+4,arg1);
+}
+
+//Method that deletes a password in the specified index
+void deletePassword(int index) {
+  byte i = 1;
+  byte location = index/8;
+  byte position = index%8;
+  i<<=position;
+  byte j = EEPROM.read(location);
+  j ^= i;
+  EEPROM.write(location,j);
+}
+
+//Method that deletes all passwords
+void deleteAllPasswords() {
+  //Password reference to inactive
+
+  for (int i = 0 ; i < EEPROM.length() ; i++) {
+    EEPROM.write(i, 0);
+  }
+}
