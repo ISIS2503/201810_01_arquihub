@@ -4,10 +4,38 @@ var modeloClave = require("../models/clave");
 module.exports = {
 
   darUsuarios: async (req, res, next) => {
+    console.log('get usuarios');
     var usuarios = await modeloUsuario.find({});
-    console.log(Claves.usuarios);
     res.status(200).json(usuarios);
   },
+  login: async(req,res,next) =>{
+      
+    console.log('login usuario');
+    var {usuarioId} = req.params;
+    var usuario = await modeloUsuario.findById(usuarioId);
+
+    var emailP = usuario.email;
+    var passwordP = usuario.password;
+
+  var request = require("request");
+  var options = { method: 'POST',
+  url: 'https://arquihub.auth0.com/oauth/token',
+  headers: { 'content-type': 'application/json' },
+  body: 
+   { client_id: 't4imRyiQXZ1mYpStwtGBAzwsuPwQe0Fk', email: emailP, password: passwordP,
+    client_secret: 'S15sWA52fApT-VsIp1GAgI0j_ZJWXtofxN--GEOTALyGREfe3oCPJXgMilv-aPxr',
+    audience: 'uniandes.edu.co/arquihub',
+    grant_type:'client_credentials'},
+    json:true };
+request(options, function (error, response, body) {
+  if (error) throw new Error(error);
+
+console.log(body);
+var token = body.access_token;
+console.log(token);
+});
+    res.status(201).json(usuario);
+},
   nuevoUsuario: async(req,res,next) =>{
 
     console.log('post usuarios');
@@ -23,7 +51,7 @@ module.exports = {
   headers: { 'content-type': 'application/json' },
   body:
    {
-     client_id: '4J0_qCiehUxj8hJIZbg5SbSBUUpHdoWA',
+     client_id: 't4imRyiQXZ1mYpStwtGBAzwsuPwQe0Fk',
      email:emailP,
      password: passwordP,
      connection: 'Username-Password-Authentication'
@@ -34,14 +62,13 @@ request(options, function (error, response, body) {
 
   console.log(body);
 });
-
     res.status(201).json(usuario);
   },
   darUsuario: async(req,res,next) =>{
     console.log('get by id usuario');
     var {usuarioId} = req.params;
     var usuario = await modeloUsuario.findById(usuarioId);
-    res.status(200).json(unidad);
+    res.status(200).json(usuario);
   },
   editarUsuario: async(req,res,next)=>{
     console.log('put usuario');
@@ -73,7 +100,6 @@ request(options, function (error, response, body) {
     var {idUsuario} =req.params;
     var newClave = new modeloClave(req.body);
     var user = await modeloUsuario.findById(idUsuario);
-    newClave.unidad = user;
     await newClave.save();
     user.claves.push(newClave);
     await user.save();

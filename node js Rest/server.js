@@ -100,6 +100,7 @@ router.get('/', function(req, res) {
 
 // on routes that end in /ALARMAS
 // ----------------------------------------------------
+router.route('/login')
 
 
 router.route('/alarmas')
@@ -230,13 +231,15 @@ router.route('/claves/:claveId')
 router.route('/usuarios')
     .get(usuarioController.darUsuarios)
     .post(usuarioController.nuevoUsuario);
-router.route('/usuarios/:userId')
+router.route('/usuarios/:usuarioId')
     .get(usuarioController.darUsuario)
     .put(usuarioController.editarUsuario)
     .delete(usuarioController.borrarUsuario);
-router.route('/usuarios/:userId/estado')
+router.route('/usuarios/:usuarioId/login')
+    .post(usuarioController.login);
+router.route('/usuarios/:usuarioId/estado')
     .put(usuarioController.editarEstadoUsuario);
-router.route('/usuarios/:userId/inmuebles')
+router.route('/usuarios/:idUsuario/claves')
     .get(usuarioController.darClavesUsuario)
     .post(usuarioController.nuevaClaveUsuario);
 
