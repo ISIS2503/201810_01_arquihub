@@ -10,6 +10,7 @@ var inmuebleController     = require('./controllers/inmueble');
 var hubController     = require('./controllers/hub');
 var cerraduraController     = require('./controllers/cerradura');
 var claveController = require('./controllers/clave');
+var usuarioController = require('./controllers/usuario');
 
 var express    = require('express');        // call express
 var app        = express();                 // define our app using express
@@ -223,13 +224,21 @@ router.route('/claves')
 router.route('/claves/:claveId')
     .delete(claveController.deleteClave)
     .put(claveController.editclave);
-
-
-
-
-
-
-
+    
+// ruta de usuarios
+// ----------------------------------------------------
+router.route('/usuarios')
+    .get(usuarioController.darUsuarios);
+    .post(usuarioController.nuevoUsuario);
+router.route('/usuarios/:userId')
+    .get(usuarioController.darUsuario)
+    .put(usuarioController.editarUsuario)
+    .delete(usuarioController.borrarUsuario);
+router.route('/usuarios/:userId/estado')
+    .put(usuarioController.editarEstadoUsuario);
+router.route('/usuarios/:userId/inmuebles')
+    .get(usuarioController.darClavesUsuario)
+    .post(usuarioController.nuevaClaveUsuario);
 
 // ruta de /unidadResidencial
 // ----------------------------------------------------
