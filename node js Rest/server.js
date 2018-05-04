@@ -18,7 +18,7 @@ var mongoose   = require('mongoose');
 var url = 'mongodb://localhost:27017/ArquiHub';
 var mqtt = require('mqtt')                  // importar mqtt
 var client  = mqtt.connect('mqtt://172.24.42.92:8083') ///// FALTA CONFIGURAR ESTO, IP de donde está alojado el MQTT
-
+app.use('/healthcheck', require('express-healthcheck')());
 
 //Variables para el Health check
 var tiempoSinHealthCheck = 0;
@@ -89,13 +89,13 @@ cadaSegundo = setInterval(loop1sec,1000);
 function loop1sec() {
   if(tiempoSinHealthCheck > 60)
   {
-    console.log("CERRADURA FUERA DE LINEA")
+    console.log("\n CERRADURA FUERA DE SERVICIO \n Tiempo sin servicio aproximado: " + tiempoSinHealthCheck)
     clearInterval(cadaSegundo);
     //cerrarInterval();
 
     return;
   }
-  console.log("Tiempo: "+tiempoSinHealthCheck)
+  //console.log("Tiempo: "+tiempoSinHealthCheck)
   tiempoSinHealthCheck ++;
 }
 function reiniciarInterval()

@@ -1,10 +1,9 @@
 {
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "node sistemaYale.js"
   },
-  "name": "",
-  "version": "",
-  "description": "App de NodeJS para Aquihub",
+  "name": "sistemaYale",
+  "description": "App de NodeJS para Aquihub (SistemaCentralYale)",
   "dependencies": {
     "body-parser": "^1.18.2",
     "dateformat": "^3.0.3",
@@ -14,5 +13,9 @@
     "mqtt": "^2.17.0",
     "npm": "^5.8.0",
     "request": "^2.85.0"
-  }
+  },
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC"
 }
