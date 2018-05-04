@@ -11,7 +11,6 @@ var hubController     = require('./controllers/hub');
 var cerraduraController     = require('./controllers/cerradura');
 var claveController = require('./controllers/clave');
 var usuarioController = require('./controllers/usuario');
-
 var express    = require('express');        // call express
 var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
@@ -19,6 +18,12 @@ var mongoose   = require('mongoose');
 var url = 'mongodb://localhost:27017/ArquiHub';
 var mqtt = require('mqtt')                  // importar mqtt
 var client  = mqtt.connect('mqtt://172.24.42.92:8083') ///// FALTA CONFIGURAR ESTO, IP de donde está alojado el MQTT
+app.use('/healthcheck', require('express-healthcheck')());
+
+//Variables para el Health check
+var tiempoSinHealthCheck = 0;
+var cadaSegundo;
+
 
 //CONEXIÓN A BASE DE DATOS
 // =================================================================================
@@ -43,6 +48,7 @@ client.on('connect', function () {   //Cuando se conecte
   client.subscribe('pruebaMQTT')
   client.publish('pruebaMQTT', 'Prueba MQTT Correcta')
   client.subscribe('alarmas')
+  client.subscribe('HealthCheck')
 
   //client.publish('unidadResidencial/inmueble/hub/cerradura/api')
 })
@@ -50,12 +56,8 @@ client.on('connect', function () {   //Cuando se conecte
 client.on('message', function (topic, message) { //Cuando haya un mensaje
   //message is Buffer
   console.log("=======================MENSAJE RECIBIDO EN MQTT=============================")
-  if(topic == 'pruebaMQTT')
-  {
-    console.log('Topico: '+ topic);
-  }
-  else if(topic == 'alarmas'){
-    console.log('Topico: ' + topic);
+  console.log('Topico: '+ topic);
+  if(topic == 'alarmas'){
    var alarma = new alarmas();      // create a new instance of the Bear model
    var obj = JSON.parse(message);
    alarma.tipo = obj.body.tipo;
@@ -72,13 +74,35 @@ client.on('message', function (topic, message) { //Cuando haya un mensaje
      res.json({ message: 'Alarma created!' });
   });
 }
-else //if(topic == 'claves')
-{
-  console.log('Topico: '+ topic)
-}
+  else if(topic == 'HealthCheck')
+  {
+    tiempoSinHealthCheck = 0;
+    clearInterval(cadaSegundo);
+    setTimeout(reiniciarInterval,1)
+  }
   console.log('Mensaje:  ' + message.toString())
   console.log("===========================================================================")
 })
+cadaSegundo = setInterval(loop1sec,1000);
+
+//Health Checks recibidos de las cerraduras, loop de un segundo para el health check
+function loop1sec() {
+  if(tiempoSinHealthCheck > 60)
+  {
+    console.log("\n CERRADURA FUERA DE SERVICIO \n Tiempo sin servicio aproximado: " + tiempoSinHealthCheck)
+    clearInterval(cadaSegundo);
+    //cerrarInterval();
+
+    return;
+  }
+  //console.log("Tiempo: "+tiempoSinHealthCheck)
+  tiempoSinHealthCheck ++;
+}
+function reiniciarInterval()
+{
+  tiempoSinHealthCheck=0;
+  cadaSegundo = setInterval(loop1sec,1000);
+}
 
 // ROUTES FOR OUR API
 // =============================================================================
