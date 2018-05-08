@@ -100,9 +100,10 @@ request(options, function (error, response, body) {
     var {idUsuario} =req.params;
     var newClave = new modeloClave(req.body);
     var user = await modeloUsuario.findById(idUsuario);
+    newClave.usuario = bar;
     await newClave.save();
     user.claves.push(newClave);
     await user.save();
-    res.status(201).json(newClave);
+    res.status(201).json(newInmueble);
   }
 };

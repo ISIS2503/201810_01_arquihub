@@ -7,7 +7,11 @@ var unidadResidencial   = new Schema({
     name: String,
     codigo: String,
     estado: Boolean,
-    inmuebles: [{
+    barrio:{
+      type: Schema.Types.ObjectId,
+      ref:'barrio'
+    },
+   inmuebles: [{
       type: Schema.Types.ObjectId,
       ref:'inmuebles'
     }]

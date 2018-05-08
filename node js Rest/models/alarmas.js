@@ -9,9 +9,10 @@ var alarmas   = new Schema({
     codigo: String,
     fecha: String,
     descripcion: String,
-    unidadResidencial: Number,
-    propietarioInmueble: Number,
-    cerradura:Number
+    cerradura:{
+      type: Schema.Types.ObjectId,
+      ref:'cerradura'
+    }
 });
 
 module.exports = mongoose.model('alarmas', alarmas);
