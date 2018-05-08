@@ -1,0 +1,82 @@
+{
+	"variables": [],
+	"info": {
+		"name": "exp 2",
+		"_postman_id": "8377b8e9-8417-5860-a392-a19c05a90ddc",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "cambiar contraseña",
+			"request": {
+				"url": "https://isis2503-avperezb.auth0.com/dbconnections/change_password",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"client_id\": \"0bJ7Knuu3DZNFYsp8MXAgk04-P-_ALb9\",\r\n  \"email\": \"av.perezb@uniandes.edu.co\",\r\n  \"password\": \"\",\r\n  \"connection\": \"Username-Password-Authentication\"\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "signup usuarios",
+			"request": {
+				"url": "localhost:8080/api/usuarios",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"hola139@propietario.com\",\r\n  \"estado\": true,\r\n  \"password\": \"Arquihub.12\"\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "get todos los usuarios con sus claves",
+			"request": {
+				"url": "localhost:8080/api/usuarios",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "generar token",
+			"request": {
+				"url": "localhost:8080/api/usuarios/5adcbd0ff8abf62f68ddd619/login",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"corre89@propietario.com\",\r\n  \"password\": \"Arquihub.12\"\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

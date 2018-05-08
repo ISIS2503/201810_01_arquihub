@@ -1,0 +1,5 @@
+function (user, context, callback) {
+  // Add the namespaced tokens. Remove any which is not necessary for your scenario
+  context.idToken['http://arquihub/roles'] = user.app_metadata.roles;
+  callback(null, user, context);
+}
