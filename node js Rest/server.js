@@ -315,6 +315,36 @@ router.route('/alarmas/mensualUnidad/:idUnidad').get(function(req, res) {
     }
   })
 });
+//consultar alamas mensual por barrio
+router.route('/alarmas/mensualBarrio/:idBarrio').get(function(req, res) {
+  var cutoff = new Date();
+  cutoff.setDate(cutoff.getMonth());
+  alarmas.find(({
+    'barrio': req.params.idBarrio,
+    'fecha': {
+      $eq: cutoff
+    }
+  }), function finded(err, media) {
+    if (err)
+      console.log(err)
+    if (media.length > 0) {
+      var ret = [];
+      for (j = 0; j < media.length; j++) {
+        var m = new alarmas();
+        m.tipo = media[j].tipo;
+        m.codigo = media[j].codigo;
+        m.fecha = media[j].fecha;
+        m.descripcion = media[j].descripcion;
+        m.unidadResidencial = media[j].unidadResidencial;
+        m.inmueble = req.params.idInmueble;
+        ret[j] = m;
+      }
+      res.json({ret});
+    } else {
+      res.json({error: 'Este barrio no tiene ninguna alarma'})
+    }
+  })
+});
 //consultar alarmas por inmuebles
 router.route('/alarmas/inmueble/:idInmueble').get(function(req, res) {
   alarmas.find(({'inmueble': req.params.idInmueble}), function finded(err, media) {
@@ -382,7 +412,7 @@ router.route('/cerraduras/:cerraduraId')
 router.route('/cerraduras/:cerraduraId/estado')
     .put(cerraduraController.editarEstadoCerradura);
 router.route('/cerraduras/:cerraduraId/alarma')
-    .post(cerraduraController.nuevaAlarmaCerradura);   
+    .post(cerraduraController.nuevaAlarmaCerradura);
 router.route('/cerraduras').get(cerraduraController.cerraduras);
 router.route('/cerraduras/:cerraduraId').get(cerraduraController.darCerradura).put(cerraduraController.editarCerradura);
 router.route('/cerraduras/:cerraduraId/estado').put(cerraduraController.editarEstadoCerradura);

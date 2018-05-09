@@ -20,6 +20,10 @@ var alarmas   = new Schema({
     unidadResidencial:{
       type: Schema.Types.ObjectId,
       ref:'unidadResidencial'
+    },
+    barrio:{
+      type: Schema.Types.ObjectId,
+      ref:'barrio'
     }
 });
 
