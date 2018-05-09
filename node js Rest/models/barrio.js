@@ -5,7 +5,7 @@ var Schema       = mongoose.Schema;
 
 var barrio   = new Schema({
     name: String,
-    estado: Boolean,
+    localidad: String,
     unidadesResidenciales: [{
       type: Schema.Types.ObjectId,
       ref:'unidadesResidenciales'

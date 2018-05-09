@@ -10,6 +10,7 @@ var inmuebleController     = require('./controllers/inmueble');
 var hubController     = require('./controllers/hub');
 var cerraduraController     = require('./controllers/cerradura');
 var claveController = require('./controllers/clave');
+var barrioController = require('./controllers/barrio');
 var usuarioController = require('./controllers/usuario');
 var express    = require('express');        // call express
 var app        = express();                 // define our app using express
@@ -241,6 +242,22 @@ router.route('/alarmas/administrador/:idUnidadResidencial')
         });
     });
 
+//rutas para barrios
+router.route('/barrios')
+    .get(barrioController.barrios)
+    .post(barrioController.nuevoBarrio);
+router.route('/barrios/:nombreBarrio')
+    .get(barrioController.darBarrioNombre);
+router.route('/barrios/:barrioId')
+    .get(barrioController.darBarrio)
+    .put(barrioController.editarBarrio)
+    .delete(barrioController.borrarBarrio);
+router.route('/barrios/:barrioId/unidadResidencial')
+    .get(barrioController.darUnidadesBarrio)
+    .post(barrioController.nuevaUnidadBarrio);
+router.route('/barrios/:idBarrio/mensual')
+    .get(barrioController.alarmasMensualPorBarrio);
+
 //ruta para claves
 router.route('/claves')
     .get(claveController.claves)
@@ -315,6 +332,8 @@ router.route('/cerraduras/:cerraduraId')
     .put(cerraduraController.editarCerradura);
 router.route('/cerraduras/:cerraduraId/estado')
     .put(cerraduraController.editarEstadoCerradura);
+router.route('/cerraduras/:cerraduraId/alarma')
+    .post(cerraduraController.nuevaAlarmaCerradura);   
 
 
 // REGISTER OUR ROUTES -------------------------------
