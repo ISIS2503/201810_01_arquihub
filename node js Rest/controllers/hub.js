@@ -33,7 +33,7 @@ module.exports = {
   },
   nuevoHubCerradura: async(req,res,next)=>{
     var {hubId}=req.params;
-    var newCerradura= new Hub(req.body);
+    var newCerradura= new Cerradura(req.body);
     var hub = await Hub.findById(hubId);
     newCerradura.hub = hub;
     await newCerradura.save();

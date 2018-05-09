@@ -1,5 +1,6 @@
 
 var Cerradura = require('../models/cerradura');
+var Alarma = require('../models/alarmas');
 
 module.exports = {
 
@@ -24,5 +25,16 @@ module.exports = {
     cerradura.estado = req.body.estado;
     var result =await Cerradura.findByIdAndUpdate(cerraduraId,cerradura);
     res.status(200).json({success:true});
-  }
+  },
+  nuevaAlarmaCerradura: async(req,res,next)=>{
+    var {cerraduraId} = req.params;
+    var newAlarma = new Alarma(req.body);
+    var cerradura = await Cerradura.findById(cerraduraId);
+    newAlarma.cerradura = cerradura;
+    await newAlarma.save();
+    cerradura.alarmas.push(newAlarma);
+    await cerradura.save();
+    res.status(201).json(cerradura);
+}
+
 }

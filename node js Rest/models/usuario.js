@@ -8,6 +8,7 @@ var usuario   = new Schema({
     email: String,
     password: String,
     estado: Boolean,
+    rol: String,
     claves: [{
       type: Schema.Types.ObjectId,
       ref:'claves'
