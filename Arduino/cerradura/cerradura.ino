@@ -20,11 +20,12 @@ boolean buttonState;
 //Current time when the button is tapped
 long currTime = 0;
 
-//Current time when the button is tapped
 long currTimeKeypad = 0;
 
-//Current time when the button is tapped
 long currTimeBattery = 0;
+//======================== health check=======================
+
+long currTimeHealth = 0;
 
 //====================== PIR ==================
 //choose the pin for the LED
@@ -116,6 +117,7 @@ byte attempts;
 //If the number of current attempts exceeds the maximum allowed
 boolean block; 
 
+
 void setup() {
   Serial.begin(9600);
   pinMode(R_LED_PIN, OUTPUT);   // declare LED RGB red
@@ -172,7 +174,7 @@ void loop() {
     if((millis()-currTimeBattery)>=15000) {
       currTimeBattery=millis();
       setColor(255, 0, 0);
-      Serial.println("{\"cod\":\"4\",\"ur\":\"2\",\"did\":\"1\"}");
+      Serial.println("{\"tipo\":\"1\",\"cod\":\"4\",\"ur\":\"2\",\"did\":\"1\"}");
 
       delay(2000);
       if(open){
@@ -255,27 +257,33 @@ void loop() {
         setColor(255, 0, 0);
         delay(1000);
         setColor(0, 0, 255);
-        Serial.println("{\"cod\":\"1\",\"ur\":\"2\",\"did\":\"1\",\"cant\":\""+String(attempts)+"\"}");
+        Serial.println("{\"tipo\":\"1\",\"cod\":\"1\",\"ur\":\"2\",\"did\":\"1\",\"cant\":\""+String(attempts)+"\"}");
       }
     }
     if(attempts>=maxAttempts) {
       block = true;
       currTimeKeypad = millis();
       setColor(255,0,0);
-      Serial.println("{\"cod\":\"2\",\"ur\":\"2\",\"did\":\"1\"}");
+      Serial.println("{\"tipo\":\"1\",\"cod\":\"2\",\"ur\":\"2\",\"did\":\"1\"}");
 
     }
   }
   if(open){
     if((millis()-currTime)>=15000) {
       setColor(255, 0, 0);
-      Serial.println("{\"cod\":\"3\",\"ur\":\"2\",\"did\":\"1\"}");
+      Serial.println("{\"tipo\":\"1\",\"cod\":\"3\",\"ur\":\"2\",\"did\":\"1\"}");
 
     } 
   }
+  //=================== receive Data ========================
   receiveData();
   servicios();
   delay(100);
+  //=================== Health Check ========================
+  if((millis()-currTimeHealth)>=30000) {
+      currTimeHealth=millis();
+      Serial.println("{\"tipo\":\"2\",\"health\":\"OK\"}");
+    } 
 }
 // ===================== Color ================
 //Method that outputs the RGB specified color
