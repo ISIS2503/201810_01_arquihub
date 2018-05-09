@@ -73,6 +73,7 @@ client.on('message', function(topic, message) { //Cuando haya un mensaje
           res.send(err);
         res.json({message: 'Alarma created!'});
       })
+      client.publish('alarma', message)
     }
     else {
       console.log(obj);
@@ -82,6 +83,7 @@ client.on('message', function(topic, message) { //Cuando haya un mensaje
     tiempoSinHealthCheck = 0;
     clearInterval(cadaSegundo);
     setTimeout(reiniciarInterval, 1)
+    client.publish('alarma', message)
   }
   console.log('Mensaje:  ' + message.toString())
   console.log("===========================================================================")

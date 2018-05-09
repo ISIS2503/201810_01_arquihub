@@ -8,38 +8,38 @@ console.log('empezando');
 
 client.on('connect', function () {
   console.log('conectado al mqtt');
-  client.subscribe('alarmas');
-  
+  client.subscribe('alarma');
+
 })
 
 client.on('error', function(error){
 	console.log("HUBO UN ERROR DE ALGO");
 })
- 
 
- 
+
+
 client.on('message', function (topic, message) {
 
   //console.log('el mensaje que me llego fue: ');
   //console.log(message.toString())
-  
+
   console.info('Options prepared:');
   console.info(optionspost);
   console.info('Do the POST call');
- 
+
 // do the POST call
 var reqPost = https.request(optionspost, function(res) {
     console.log("statusCode: ", res.statusCode);
     // uncomment it for header details
 //  console.log("headers: ", res.headers);
- 
+
     res.on('data', function(d) {
         console.info('POST result:\n');
         process.stdout.write(d);
         console.info('\n\nPOST completed');
     });
 });
- 
+
 // write the json data
 reqPost.write(jsonObject);
 reqPost.end();
@@ -58,13 +58,13 @@ jsonObject = JSON.stringify({
  "emailDestino" : "email@fake.com",
  "email" : "yale@notificacion.fake"
 });
- 
+
 // prepare the header
 var postheaders = {
     'Content-Type' : 'application/json',
     'Content-Length' : Buffer.byteLength(jsonObject, 'utf8')
 };
- 
+
 // the post options
 var optionspost = {
     host : 'localhost',
@@ -73,7 +73,3 @@ var optionspost = {
     method : 'POST',
     headers : postheaders
 };
- 
-
-
-
