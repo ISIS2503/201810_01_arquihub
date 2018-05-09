@@ -326,6 +326,7 @@ router.route('/alarmas/inmueble/:idInmueble').get(function(req, res) {
 //ruta para claves
 router.route('/claves').get(claveController.claves).post(claveController.nuevaClave).delete(claveController.deleteClaves);
 router.route('/claves/:claveId').delete(claveController.deleteClave).put(claveController.editclave);
+router.route('/claves/horario').post(claveController.nuevaClaveHorario);
 
 // ruta de usuarios
 // ----------------------------------------------------
