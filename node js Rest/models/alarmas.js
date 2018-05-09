@@ -12,13 +12,13 @@ var alarmas   = new Schema({
     cerradura:{
       type: Schema.Types.ObjectId,
       ref:'cerradura'
-    }
+    },
     inmueble:{
       type: Schema.Types.ObjectId,
       ref:'inmueble'
-    }
+    },
     unidadResidencial:{
-      type: Schema.Type.ObjectId,
+      type: Schema.Types.ObjectId,
       ref:'unidadResidencial'
     }
 });

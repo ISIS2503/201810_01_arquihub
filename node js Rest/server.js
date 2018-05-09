@@ -57,23 +57,28 @@ client.on('message', function(topic, message) { //Cuando haya un mensaje
   //message is Buffer
   console.log("=======================MENSAJE RECIBIDO EN MQTT=============================")
   console.log('Topico: ' + topic);
-  if (topic == 'alarmas') {
-    var alarma = new alarmas(); // create a new instance of the Bear model
+  if (topic == alarmas) {
     var obj = JSON.parse(message);
-    alarma.tipo = obj.body.tipo;
-    alarma.codigo = obj.body.codigo;
-    alarma.descripcion = obj.body.descripcion;
-    alarma.unidadResidencial = obj.body.unidadResidencial;
-    alarma.propietarioInmueble = obj.body.propietarioInmueble;
-    alarma.cerradura = obj.body.cerradura;
-    //save the bear and check for errors
-    alarma.save(function(err) {
-      if (err)
-        res.send(err);
-
-      res.json({message: 'Alarma created!'});
-    });
-  } else if (topic == 'HealthCheck') {
+    if (obj.body.tipo = 1) {
+      var alarma = new alarmas(); // create a new instance of the Bear model
+      alarma.tipo = obj.body.tipo;
+      alarma.codigo = obj.body.codigo;
+      alarma.descripcion = obj.body.descripcion;
+      alarma.unidadResidencial = obj.body.unidadResidencial;
+      alarma.propietarioInmueble = obj.body.propietarioInmueble;
+      alarma.cerradura = obj.body.cerradura;
+      //save the bear and check for errors
+      alarma.save(function(err) {
+        if (err)
+          res.send(err);
+        res.json({message: 'Alarma created!'});
+      })
+    }
+    else {
+      console.log(obj);
+    };
+  }
+  else if (topic == 'HealthCheck') {
     tiempoSinHealthCheck = 0;
     clearInterval(cadaSegundo);
     setTimeout(reiniciarInterval, 1)
@@ -225,15 +230,20 @@ router.route('/alarmas/administrador/:idUnidadResidencial').get(function(req, re
 });
 
 //Consultar alarmas mensuales para inmueble
-router.route('/alarmas/mensual/:idInmueble').get(function(req,res){
+router.route('/alarmas/mensual/:idInmueble').get(function(req, res) {
   var cutoff = new Date();
   cutoff.setDate(cutoff.getMonth());
-  alarmas.find(({'inmueble': req.params.idInmueble, 'fecha': {$eq:cutoff}}), function finded(err, media) {
-    if(err)
+  alarmas.find(({
+    'inmueble': req.params.idInmueble,
+    'fecha': {
+      $eq: cutoff
+    }
+  }), function finded(err, media) {
+    if (err)
       console.log(err)
-    if(media.length > 0){
+    if (media.length > 0) {
       var ret = [];
-      for(j =0;j<media.length;j++){
+      for (j = 0; j < media.length; j++) {
         var m = new alarmas();
         m.tipo = media[j].tipo;
         m.codigo = media[j].codigo;
@@ -244,23 +254,27 @@ router.route('/alarmas/mensual/:idInmueble').get(function(req,res){
         ret[j] = m;
       }
       res.json({ret});
-    }
-    else{
+    } else {
       res.json({error: 'Este inmueble no tiene ninguna alarma'})
     }
   })
 });
 
 //Consultar alarmas mensuales para unidad Residencial
-router.route('/alarmas/mensualUnidad/:idUnidad').get(function(req,res){
+router.route('/alarmas/mensualUnidad/:idUnidad').get(function(req, res) {
   var cutoff = new Date();
   cutoff.setDate(cutoff.getMonth());
-  alarmas.find(({'unidadResidencial': req.params.idInmueble, 'fecha': {$eq:cutoff}}), function finded(err, media) {
-    if(err)
+  alarmas.find(({
+    'unidadResidencial': req.params.idInmueble,
+    'fecha': {
+      $eq: cutoff
+    }
+  }), function finded(err, media) {
+    if (err)
       console.log(err)
-    if(media.length > 0){
+    if (media.length > 0) {
       var ret = [];
-      for(j =0;j<media.length;j++){
+      for (j = 0; j < media.length; j++) {
         var m = new alarmas();
         m.tipo = media[j].tipo;
         m.codigo = media[j].codigo;
@@ -271,20 +285,19 @@ router.route('/alarmas/mensualUnidad/:idUnidad').get(function(req,res){
         ret[j] = m;
       }
       res.json({ret});
-    }
-    else{
+    } else {
       res.json({error: 'Este inmueble no tiene ninguna alarma'})
     }
   })
 });
 //consultar alarmas por inmuebles
-router.route('/alarmas/inmueble/:idInmueble').get(function(req,res){
+router.route('/alarmas/inmueble/:idInmueble').get(function(req, res) {
   alarmas.find(({'inmueble': req.params.idInmueble}), function finded(err, media) {
-    if(err)
+    if (err)
       console.log(err)
-    if(media.length > 0){
+    if (media.length > 0) {
       var ret = [];
-      for(j =0;j<media.length;j++){
+      for (j = 0; j < media.length; j++) {
         var m = new alarmas();
         m.tipo = media[j].tipo;
         m.codigo = media[j].codigo;
@@ -295,8 +308,7 @@ router.route('/alarmas/inmueble/:idInmueble').get(function(req,res){
         ret[j] = m;
       }
       res.json({ret});
-    }
-    else{
+    } else {
       res.json({error: 'Este inmueble no tiene ninguna alarma'})
     }
   })
