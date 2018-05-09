@@ -77,13 +77,17 @@ client.on('message', function(topic, message) { //Cuando haya un mensaje
     }
     else {
       console.log(obj);
+      tiempoSinHealthCheck = 0;
+      clearInterval(cadaSegundo);
+      setTimeout(reiniciarInterval, 1)
+      client.publish('alarma', message)
     };
   }
   else if (topic == 'HealthCheck') {
-    tiempoSinHealthCheck = 0;
-    clearInterval(cadaSegundo);
-    setTimeout(reiniciarInterval, 1)
-    client.publish('alarma', message)
+  //  tiempoSinHealthCheck = 0;
+  //  clearInterval(cadaSegundo);
+  //  setTimeout(reiniciarInterval, 1)
+  //  client.publish('alarma', message)
   }
   console.log('Mensaje:  ' + message.toString())
   console.log("===========================================================================")
@@ -199,7 +203,11 @@ router.route('/alarmas/propietario/:idPropietario').get(function(req, res) {
     }
   });
 });
+router.route('/alarmas/silenciar').post(function(req,res){
+  if(req.body.tipo = 3){
 
+  }
+})
 //consultar alarmas por unidad residencial
 router.route('/alarmas/administrador/:idUnidadResidencial').get(function(req, res) {
   console.log('entró al administrador');

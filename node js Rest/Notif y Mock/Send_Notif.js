@@ -1,8 +1,11 @@
 var https = require('http'); //https usado en internet, creo que no es express
 var mqtt = require('mqtt');
+var bodyParser = require('body-parser');
 var client  = mqtt.connect('mqtt://172.24.42.92:8083') //QUITAR ESTO, USAR EL NUESTRO.
 //FALTA QUE SE CONECTA A MQTT Y ARME LA PETICION CON LO QUE DIGA ESA VAINA, WEY
 //console.log(client);
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
 console.log('empezando');
 
 
@@ -19,10 +22,17 @@ client.on('error', function(error){
 
 
 client.on('message', function (topic, message) {
-
+  var obj = JSON.parse(message);
   //console.log('el mensaje que me llego fue: ');
   //console.log(message.toString())
-
+  if(message.body.tipo = 3){
+    client.unsuscribe('alarma', function(error){console.log(error)
+    })
+  }
+  if(message.body.tipo = 4){
+    client.unsuscribe('alarma', function(error){console.log(error)
+    })
+  }
   console.info('Options prepared:');
   console.info(optionspost);
   console.info('Do the POST call');
