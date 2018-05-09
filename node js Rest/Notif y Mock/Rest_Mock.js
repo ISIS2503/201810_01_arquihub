@@ -7,6 +7,8 @@
 var express    = require('express');        // call express
 var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
+//const passport = require('passport');
+//const Auth0Strategy = require('passport-auth0');
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
@@ -30,11 +32,11 @@ router.use(function(req, res, next){console.log('something is happening omg');
 router.route('/notif')
 	.post(function(req, res){
 		console.log('ME ESTAN LLAMANDO AHHHHH');
-		pornhub = req.body.emailDestino;
+		algo = req.body.emailDestino;
 		fake = req.body.email;
 		
-		//res.json({"Message": "Se envia la notif al email" + pornhub });
-		res.send('se envio la notificacion al email ' + pornhub + 'desde' + fake);
+		//res.json({"Message": "Se envia la notif al email" + algo });
+		res.send('se envio la notificacion al email ' + algo + ' desde ' + fake);
 	});
 
 // more routes for our API will happen here
