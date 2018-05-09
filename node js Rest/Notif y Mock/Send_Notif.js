@@ -4,6 +4,8 @@ var bodyParser = require('body-parser');
 var client  = mqtt.connect('mqtt://172.24.42.92:8083') //QUITAR ESTO, USAR EL NUESTRO.
 //FALTA QUE SE CONECTA A MQTT Y ARME LA PETICION CON LO QUE DIGA ESA VAINA, WEY
 //console.log(client);
+var express    = require('express');        // call express
+var app        = express();
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 console.log('empezando');
@@ -80,7 +82,7 @@ var postheaders = {
 // the post options
 var optionspost = {
     host : 'localhost',
-    port : 8080,
+    port : 8099,
     path : '/api/notif',
     method : 'POST',
     headers : postheaders

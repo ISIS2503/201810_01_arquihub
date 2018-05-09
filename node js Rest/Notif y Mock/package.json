@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "node server.js"
+    "start": "node Send_Notif.js; node Rest_Mock.js"
   },
   "name": "",
   "version": "",
