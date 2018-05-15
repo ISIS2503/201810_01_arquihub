@@ -4,6 +4,7 @@
 const jwt = require('jwt-simple')
 const moment = require('moment')
 const config = require('../config')
+var modeloUsuario = require("../models/usuario");
 
 
 function createToken (user) {
@@ -16,18 +17,20 @@ function createToken (user) {
 	return jwt.encode(payload, config.SECRET_TOKEN)
 }
 
-function decodeToken(token) {
+const decodeToken = function(token) {
+
 	const decoded = new Promise((resolve, reject)=> {
 		try {
          
          const payload = jwt.decode(token, config.SECRET_TOKEN)
          
-         if(payload.exp < moment().unix()) {
+         if(payload.exp <= moment().unix()) {
 		reject({
 			status:401,
 			message:'El token ha expirado'
 		})
 	  }
+
 	  	resolve(payload.sub)
 		} catch(err) {
 			reject({
@@ -38,13 +41,60 @@ function decodeToken(token) {
 	})
 	console.log(decoded)
 	return decoded
-
 }
 
+function esAdmin (req, res) {
+  
+  if (decodeToken !== null)
+  {
+    usuario = new userModel (modeloUsuario.findById(decodeToken.user))
+    if (usuario.rol === "admin")
+    {
+      return true;
+    }
+      else
+    {
+    return false;
+    }
+  }
+}
 
+function esSeguridad (req, res) {
+  
+  if (decodeToken !== null)
+  {
+    usuario = new userModel (decodeToken.user)
+    if (usuario.rol === "seguridad")
+    {
+      return true;
+    }
+      else
+    {
+    return false;
+    }
+  }
+}
+function esPropietario (req, res) {
+  
+  if (decodeToken !== null)
+  {
+    usuario = new userModel (decodeToken.user)
+    if (usuario.rol === "propietario")
+    {
+      return true;
+    }
+      else
+    {
+    return false;
+    }
+  }
+}
 module.exports = {
  
  createToken,
- decodeToken
+ decodeToken,
+ esAdmin,
+ esSeguridad,
+ esPropietario
 
 }

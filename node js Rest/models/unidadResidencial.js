@@ -11,6 +11,10 @@ var unidadResidencial   = new Schema({
       type: Schema.Types.ObjectId,
       ref:'barrio'
     },
+    admin:{
+      type: Schema.Types.ObjectId,
+      ref:'admin'
+    },
    inmuebles: [{
       type: Schema.Types.ObjectId,
       ref:'inmuebles'

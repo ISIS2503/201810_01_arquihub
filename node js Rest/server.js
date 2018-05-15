@@ -16,6 +16,8 @@ var express = require('express'); // call express
 var app = express(); // define our app using express
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
+const session = require('express-session');
+const validator = require('express-validator');
 const hbs = require('express-handlebars');
 var url = 'mongodb://localhost:27017/ArquiHub';
 var mqtt = require('mqtt') // importar mqtt
@@ -26,6 +28,8 @@ app.engine('.hbs', hbs({
 }))
 app.set('view engine', '.hbs');
 app.use('/healthcheck', require('express-healthcheck'));
+app.use(validator());
+app.use(session({secret:"hs982y4htewforwi", resave:false,saveUninitialized:true}));
 const auth = require('./middlewares/auth');
 const userCtrl = require('./controllers/user');
 
@@ -142,9 +146,10 @@ router.get('/', function(req, res) {
 router.route('/signup')
  .post(userCtrl.signUp);
 router.route('/signin')
- .post(userCtrl.signIn);
+ .post(userCtrl.logueado);
 router.route('/private')
  .get(auth, (req, res) =>{
+  console.log(req);
   res.status(200).send({ message: 'Tienes acceso'})
 })
 
@@ -372,7 +377,10 @@ router.route('/usuarios/:usuarioId/claves').get(usuarioController.darClavesUsuar
 
 // ruta de /unidadResidencial
 // ----------------------------------------------------
-router.route('/unidadResidencial').get(unidadController.unidades).post(unidadController.nuevaUnidad);
+router.route('/unidadResidencial').get(auth, unidadController.unidades, (req, res) =>{
+
+})
+.post(unidadController.nuevaUnidad);
 router.route('/unidadResidencial/:unidadId').get(unidadController.darUnidad).put(unidadController.editarUnidad).delete(unidadController.borrarUnidad);
 router.route('/unidadResidencial/:unidadId/estado').put(unidadController.editarEstadoUnidad);
 router.route('/unidadResidencial/:unidadId/inmuebles').get(unidadController.darUnidadInmuebles).post(unidadController.nuevoUnidadInmueble);

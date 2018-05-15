@@ -1,18 +1,23 @@
 var UnidadResidencial = require('../models/unidadResidencial');
 var Inmueble = require('../models/inmueble');
 var modeloUsuario = require("../models/usuario");
+var Admin = require("../models/admin");
 var Hub = require('../models/hub');
 var Cerradura = require('../models/cerradura');
+const services = require('../services');
 
 
 module.exports = {
 // servicios de Unidad Residencial
   unidades: async(req,res,next) =>{
 
+    if(services.esAdmin)
+    {
+    admin = new Admin (services.decodeToken.user)
     console.log('get unidades');
-    var unidades = await UnidadResidencial.find({});
+    var unidades = await UnidadResidencial.find({admin._id = admin_id});
     res.status(200).json(unidades);
-
+    }
   },
   nuevaUnidad: async(req,res,next) =>{
 

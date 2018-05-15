@@ -3,7 +3,8 @@
 const mongoose = require('mongoose')
 const userModel = require('../models/usuario')
 const service = require('../services')
-
+const session = require('express-session')
+const validator = require('express-validator')
 
 function signUp(req, res) {
 	
@@ -22,7 +23,7 @@ function signUp(req, res) {
     })
 }
 
-const user = function signIn(req, res) {
+const logueado = function(req, res) {
 
    userModel.findOne({ email: req.body.email, password: req.body.password}, (err, user) => {
     
@@ -41,6 +42,7 @@ const user = function signIn(req, res) {
     }
   else {
 
+    req.session.user = user
     req.user = user
     user.estado = true;
     res.status(200).send({
@@ -48,13 +50,11 @@ const user = function signIn(req, res) {
       token: service.createToken(user)
      })
   }
-  console.log(user);
-  return user;
-})
- }
-
+  console.log(logueado);
+ })
+}
 module.exports = 
 {
 	signUp,
-	signIn
+	logueado
 }
