@@ -11,12 +11,19 @@ module.exports = {
 // servicios de Unidad Residencial
   unidades: async(req,res,next) =>{
 
+    //QUE SOO CONSULTE SUSS UNIDADES
     if(services.esAdmin)
     {
     admin = new Admin (services.decodeToken.user)
     console.log('get unidades');
     var unidades = await UnidadResidencial.find({admin._id = admin_id});
     res.status(200).json(unidades);
+    }
+    //yale ve TODAS
+    else if (services.esYale)
+    {
+    var todasUnidades = await UnidadResidencial.find({});
+    res.status(200).json(todasUnidades);
     }
   },
   nuevaUnidad: async(req,res,next) =>{
