@@ -377,11 +377,9 @@ router.route('/usuarios/:usuarioId/claves').get(usuarioController.darClavesUsuar
 
 // ruta de /unidadResidencial
 // ----------------------------------------------------
-router.route('/unidadResidencial').get(auth, unidadController.unidades, (req, res) =>{
-
-})
+router.route('/unidadResidencial').get(auth, unidadController.unidades, (req, res) =>{})
 .post(unidadController.nuevaUnidad);
-router.route('/unidadResidencial/:unidadId').get(unidadController.darUnidad).put(unidadController.editarUnidad).delete(unidadController.borrarUnidad);
+router.route('/unidadResidencial/:unidadId').get(auth, unidadController.darUnidad,(req, res) =>{}).put(auth, unidadController.editarUnidad,(req, res) =>{}).delete(auth, unidadController.borrarUnidad,(req, res) =>{});
 router.route('/unidadResidencial/:unidadId/estado').put(unidadController.editarEstadoUnidad);
 router.route('/unidadResidencial/:unidadId/inmuebles').get(unidadController.darUnidadInmuebles).post(unidadController.nuevoUnidadInmueble);
 

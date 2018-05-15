@@ -59,6 +59,22 @@ function esAdmin (req, res) {
   }
 }
 
+function esYale (req, res) {
+  
+  if (decodeToken !== null)
+  {
+    usuario = new userModel (modeloUsuario.findById(decodeToken.user))
+    if (usuario.rol === "yale")
+    {
+      return true;
+    }
+      else
+    {
+    return false;
+    }
+  }
+}
+
 function esSeguridad (req, res) {
   
   if (decodeToken !== null)
@@ -95,6 +111,7 @@ module.exports = {
  decodeToken,
  esAdmin,
  esSeguridad,
- esPropietario
+ esPropietario,
+ esYale
 
 }
