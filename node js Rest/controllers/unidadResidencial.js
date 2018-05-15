@@ -9,40 +9,17 @@ module.exports = {
 // servicios de Unidad Residencial
   unidades: async(req,res,next) =>{
 
-     console.log('login usuario');
-    var {usuarioId} = req.params;
-    var usuario = await modeloUsuario.findById(usuarioId);
-    console.log(usuario);
-    var autorizacionUsuario = usuario.rol;
-
-if (autorizacionUsuario == "propietario" || autorizacionUsuario == "seguridad")
-{
-   res.json({error: 'Este usuario no está autorizado.'});
-}
-else{
     console.log('get unidades');
     var unidades = await UnidadResidencial.find({});
     res.status(200).json(unidades);
-  }
+
   },
   nuevaUnidad: async(req,res,next) =>{
 
-    console.log('login usuario');
-    var {usuarioId} = req.params;
-    var usuario = await modeloUsuario.findById(usuarioId);
-    console.log(usuario);
-    var autorizacionUsuario = usuario.rol;
-
-if (autorizacionUsuario == "propietario" || autorizacionUsuario == "seguridad")
-{
-   res.json({error: 'Este usuario no está autorizado.'});
-}
-else{
     console.log('post unidades');
     var newUnidad = new UnidadResidencial(req.body);
     var unidad = await newUnidad.save();
     res.status(201).json(unidad);
-  }
 },
   darUnidad: async(req,res,next) =>{
     console.log('get by id unidad');

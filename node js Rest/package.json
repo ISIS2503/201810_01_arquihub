@@ -9,9 +9,13 @@
     "body-parser": "^1.18.2",
     "dateformat": "^3.0.3",
     "express": "^4.16.3",
+    "express-handlebars": "^3.0.0",
     "express-healthcheck": "^0.1.0",
+    "jwt-simple": "^0.5.1",
+    "moment": "^2.22.1",
     "mongoose": "^5.0.11",
     "mqtt": "^2.17.0",
+    "nodemon": "^1.17.4",
     "npm": "^5.8.0",
     "request": "^2.85.0"
   }

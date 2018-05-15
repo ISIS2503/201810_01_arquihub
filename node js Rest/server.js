@@ -16,10 +16,18 @@ var express = require('express'); // call express
 var app = express(); // define our app using express
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
+const hbs = require('express-handlebars');
 var url = 'mongodb://localhost:27017/ArquiHub';
 var mqtt = require('mqtt') // importar mqtt
 var client = mqtt.connect('mqtt://172.24.42.92:8083')
-app.use('/healthcheck', require('express-healthcheck')());
+app.engine('.hbs', hbs({
+  defaultLayout: 'default',
+  extname: '.hbs'
+}))
+app.set('view engine', '.hbs');
+app.use('/healthcheck', require('express-healthcheck'));
+const auth = require('./middlewares/auth');
+const userCtrl = require('./controllers/user');
 
 //Variables para el Health check
 var tiempoSinHealthCheck = 0;
@@ -129,6 +137,18 @@ router.get('/', function(req, res) {
 });
 
 // more routes for our API will happen here
+
+//AUTHORIZATION
+router.route('/signup')
+ .post(userCtrl.signUp);
+router.route('/signin')
+ .post(userCtrl.signIn);
+router.route('/private')
+ .get(auth, (req, res) =>{
+  res.status(200).send({ message: 'Tienes acceso'})
+})
+
+
 
 // on routes that end in /ALARMAS
 // ----------------------------------------------------
@@ -283,7 +303,7 @@ router.route('/barrios/:barrioId/unidadResidencial')
     .post(barrioController.nuevaUnidadBarrio);
 router.route('/barrios/:idBarrio/mensual')
     .get(barrioController.alarmasMensualPorBarrio);
-
+ 
 
 //Consultar alarmas mensuales para unidad Residencial
 router.route('/alarmas/mensualUnidad/:idUnidad').get(function(req, res) {
@@ -315,36 +335,6 @@ router.route('/alarmas/mensualUnidad/:idUnidad').get(function(req, res) {
     }
   })
 });
-//consultar alamas mensual por barrio
-router.route('/alarmas/mensualBarrio/:idBarrio').get(function(req, res) {
-  var cutoff = new Date();
-  cutoff.setDate(cutoff.getMonth());
-  alarmas.find(({
-    'barrio': req.params.idBarrio,
-    'fecha': {
-      $eq: cutoff
-    }
-  }), function finded(err, media) {
-    if (err)
-      console.log(err)
-    if (media.length > 0) {
-      var ret = [];
-      for (j = 0; j < media.length; j++) {
-        var m = new alarmas();
-        m.tipo = media[j].tipo;
-        m.codigo = media[j].codigo;
-        m.fecha = media[j].fecha;
-        m.descripcion = media[j].descripcion;
-        m.unidadResidencial = media[j].unidadResidencial;
-        m.inmueble = req.params.idInmueble;
-        ret[j] = m;
-      }
-      res.json({ret});
-    } else {
-      res.json({error: 'Este barrio no tiene ninguna alarma'})
-    }
-  })
-});
 //consultar alarmas por inmuebles
 router.route('/alarmas/inmueble/:idInmueble').get(function(req, res) {
   alarmas.find(({'inmueble': req.params.idInmueble}), function finded(err, media) {
@@ -372,22 +362,20 @@ router.route('/alarmas/inmueble/:idInmueble').get(function(req, res) {
 //ruta para claves
 router.route('/claves').get(claveController.claves).post(claveController.nuevaClave).delete(claveController.deleteClaves);
 router.route('/claves/:claveId').delete(claveController.deleteClave).put(claveController.editclave);
-router.route('/claves/horario').post(claveController.nuevaClaveHorario);
 
 // ruta de usuarios
 // ----------------------------------------------------
-router.route('/usuarios').get(usuarioController.darUsuarios).post(usuarioController.nuevoUsuario);
+router.route('/usuarios').get(usuarioController.darUsuarios);
 router.route('/usuarios/:usuarioId').get(usuarioController.darUsuario).put(usuarioController.editarUsuario).delete(usuarioController.borrarUsuario);
-router.route('/usuarios/:usuarioId/login').post(usuarioController.login);
 router.route('/usuarios/:usuarioId/estado').put(usuarioController.editarEstadoUsuario);
 router.route('/usuarios/:usuarioId/claves').get(usuarioController.darClavesUsuario).post(usuarioController.nuevaClaveUsuario);
 
 // ruta de /unidadResidencial
 // ----------------------------------------------------
-router.route('/unidadResidencial/:usuarioId').get(unidadController.unidades).post(unidadController.nuevaUnidad);
+router.route('/unidadResidencial').get(unidadController.unidades).post(unidadController.nuevaUnidad);
 router.route('/unidadResidencial/:unidadId').get(unidadController.darUnidad).put(unidadController.editarUnidad).delete(unidadController.borrarUnidad);
 router.route('/unidadResidencial/:unidadId/estado').put(unidadController.editarEstadoUnidad);
-router.route('/unidadResidencial/:unidadId/:usuarioId/inmuebles').get(unidadController.darUnidadInmuebles).post(unidadController.nuevoUnidadInmueble);
+router.route('/unidadResidencial/:unidadId/inmuebles').get(unidadController.darUnidadInmuebles).post(unidadController.nuevoUnidadInmueble);
 
 // ruta de /inmuebles
 // ----------------------------------------------------
@@ -412,7 +400,7 @@ router.route('/cerraduras/:cerraduraId')
 router.route('/cerraduras/:cerraduraId/estado')
     .put(cerraduraController.editarEstadoCerradura);
 router.route('/cerraduras/:cerraduraId/alarma')
-    .post(cerraduraController.nuevaAlarmaCerradura);
+    .post(cerraduraController.nuevaAlarmaCerradura);   
 router.route('/cerraduras').get(cerraduraController.cerraduras);
 router.route('/cerraduras/:cerraduraId').get(cerraduraController.darCerradura).put(cerraduraController.editarCerradura);
 router.route('/cerraduras/:cerraduraId/estado').put(cerraduraController.editarEstadoCerradura);
