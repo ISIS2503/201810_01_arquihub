@@ -39,7 +39,6 @@ const decodeToken = function(token) {
 		})
 	   }
 	})
-	console.log(decoded)
 	return decoded
 }
 
@@ -47,7 +46,7 @@ function esAdmin (req, res) {
   
   if (decodeToken !== null)
   {
-    usuario = new userModel (modeloUsuario.findById(decodeToken.user))
+    usuario = new userModel(modeloUsuario.findById(decodeToken.user._id))
     if (usuario.rol === "admin")
     {
       return true;
@@ -63,9 +62,10 @@ function esYale (req, res) {
   
   if (decodeToken !== null)
   {
-    usuario = new userModel (modeloUsuario.findById(decodeToken.user))
-    if (usuario.rol === "yale")
+    usuario = new userModel(modeloUsuario.findById(decodeToken.user))
+    if (usuario.rol === "yale" && usuario.rol!== "admin" && usuario.rol!== "seguridad")
     {
+      console.log(usuario.rol);
       return true;
     }
       else
@@ -79,7 +79,7 @@ function esSeguridad (req, res) {
   
   if (decodeToken !== null)
   {
-    usuario = new userModel (decodeToken.user)
+    usuario = new userModel(decodeToken.user)
     if (usuario.rol === "seguridad")
     {
       return true;

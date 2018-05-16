@@ -149,7 +149,6 @@ router.route('/signin')
  .post(userCtrl.logueado);
 router.route('/private')
  .get(auth, (req, res) =>{
-  console.log(req);
   res.status(200).send({ message: 'Tienes acceso'})
 })
 

@@ -11,4 +11,4 @@ var admin   = new Schema({
     }]
 });
 
-module.exports = mongoose.model("admin", admins);
+module.exports = mongoose.model("admin", admin);

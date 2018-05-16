@@ -50,7 +50,6 @@ const logueado = function(req, res) {
       token: service.createToken(user)
      })
   }
-  console.log(logueado);
  })
 }
 module.exports = 
