@@ -5,6 +5,9 @@ var Admin = require("../models/admin");
 var Hub = require('../models/hub');
 var Cerradura = require('../models/cerradura');
 const services = require('../services');
+var jwt = require ('jwt-simple');
+const config = require('../config')
+var auth = require('../middlewares/auth')
 
 
 module.exports = {
@@ -12,15 +15,20 @@ module.exports = {
   unidades: async(req,res,next) =>{
 
     //yale consulta todas
-    if (services.esYale)
+    token = auth.getToken();
+    console.log(token)
+     var xd = services.decodeToken(token,config.SECRET_TOKEN)
+     console.log(xd)
+     console.log(services.esAdmin(token))
+    if (services.esYale(token))
     {
     var todasUnidades = await UnidadResidencial.find({});
     res.status(200).json(todasUnidades);
     }
-    else if(services.esAdmin)
+    else if(services.esAdmin(token))
     {
     console.log('get unidades de un admin');
-    var unidades = await Admin.findById(services.decodeToken.user).populate('inmuebles');
+    var unidades = await Admin.findById(services.decodeToken.user).populate('unidadesResidenciales');
     res.status(200).json(unidades);
     }
   },

@@ -148,7 +148,7 @@ router.route('/signup')
 router.route('/signin')
  .post(userCtrl.logueado);
 router.route('/private')
- .get(auth, (req, res) =>{
+ .get(auth.isAuth, (req, res) =>{
   res.status(200).send({ message: 'Tienes acceso'})
 })
 
@@ -376,9 +376,9 @@ router.route('/usuarios/:usuarioId/claves').get(usuarioController.darClavesUsuar
 
 // ruta de /unidadResidencial
 // ----------------------------------------------------
-router.route('/unidadResidencial').get(auth, unidadController.unidades, (req, res) =>{})
+router.route('/unidadResidencial').get(auth.isAuth, unidadController.unidades, (req, res) =>{})
 .post(unidadController.nuevaUnidad);
-router.route('/unidadResidencial/:unidadId').get(auth, unidadController.darUnidad,(req, res) =>{}).put(auth, unidadController.editarUnidad,(req, res) =>{}).delete(auth, unidadController.borrarUnidad,(req, res) =>{});
+router.route('/unidadResidencial/:unidadId').get(auth.isAuth, unidadController.darUnidad,(req, res) =>{}).put(auth.isAuth, unidadController.editarUnidad,(req, res) =>{}).delete(auth.isAuth, unidadController.borrarUnidad,(req, res) =>{});
 router.route('/unidadResidencial/:unidadId/estado').put(unidadController.editarEstadoUnidad);
 router.route('/unidadResidencial/:unidadId/inmuebles').get(unidadController.darUnidadInmuebles).post(unidadController.nuevoUnidadInmueble);
 

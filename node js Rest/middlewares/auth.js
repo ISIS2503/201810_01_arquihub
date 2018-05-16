@@ -2,7 +2,7 @@
 
 const services = require('../services')
 
-
+var token = 1;
 function isAuth(req,res,next) {
 
 	if (!req.headers.authorization) {
@@ -12,7 +12,7 @@ function isAuth(req,res,next) {
 		res.sendStatus(403).send({ message: 'No tienes autorización'})
 	}
 
-	const token = req.headers.authorization.split(" ")[1]
+	token = req.headers.authorization.split(" ")[1]
 	
 	services.decodeToken(token)
 	.then(response => {
@@ -23,5 +23,11 @@ function isAuth(req,res,next) {
 		res.status(response.status)
 	})
 }
+function getToken(){
+	return token;
+}
 
-module.exports = isAuth
+module.exports =  	 	{
+	isAuth,
+	getToken
+}

@@ -12,6 +12,7 @@ function createToken (user) {
 	sub: user._id,
 	iat: moment().unix(),
 	exp: moment().add(14, 'days').unix(),
+  rol: user.rol,
 	}
 
 	return jwt.encode(payload, config.SECRET_TOKEN)
@@ -42,68 +43,57 @@ const decodeToken = function(token) {
 	return decoded
 }
 
-function esAdmin (req, res) {
+function esAdmin (token) {
   
-  if (decodeToken !== null)
+  if (decodeToken(token) !== null)
   {
-    usuario = new userModel(modeloUsuario.findById(decodeToken.user._id))
-    if (usuario.rol === "admin")
+    if(decodeToken(token).rol == "admin")
     {
-      return true;
+      return true
     }
-      else
-    {
-    return false;
-    }
+    else return false
   }
+  else return false
 }
 
-function esYale (req, res) {
+function esYale (token) {
   
-  if (decodeToken !== null)
+  
+  if (decodeToken(token) !== null)
   {
-    usuario = new userModel(modeloUsuario.findById(decodeToken.user))
-    if (usuario.rol === "yale" && usuario.rol!== "admin" && usuario.rol!== "seguridad")
+    if(decodeToken(token).rol == "yale")
     {
-      console.log(usuario.rol);
-      return true;
+      return true
     }
-      else
-    {
-    return false;
-    }
+    else return false
   }
+  else return false
 }
 
-function esSeguridad (req, res) {
+function esSeguridad (token) {
   
-  if (decodeToken !== null)
+  
+  if (decodeToken(token) !== null)
   {
-    usuario = new userModel(decodeToken.user)
-    if (usuario.rol === "seguridad")
+    if(decodeToken(token).rol == "seguridad")
     {
-      return true;
+      return true
     }
-      else
-    {
-    return false;
-    }
+    else return false
   }
+  else return false
 }
-function esPropietario (req, res) {
+function esPropietario (token) {
   
-  if (decodeToken !== null)
+  if (decodeToken(token) !== null)
   {
-    usuario = new userModel (decodeToken.user)
-    if (usuario.rol === "propietario")
+    if(decodeToken(token).rol == "propietario")
     {
-      return true;
+      return true
     }
-      else
-    {
-    return false;
-    }
+    else return false
   }
+  else return false
 }
 module.exports = {
  
