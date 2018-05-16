@@ -124,13 +124,14 @@ module.exports = {
             clave.horaFin=req.body.horaFin;
             clave.minutoFin=req.body.minutoFin;
             clave.horario=true;
+            clave.dias.push(req.body.domingo);
             clave.dias.push(req.body.lunes);
             clave.dias.push(req.body.martes);
             clave.dias.push(req.body.miercoles);
             clave.dias.push(req.body.jueves);
             clave.dias.push(req.body.viernes);
             clave.dias.push(req.body.sabado);
-            clave.dias.push(req.body.domingo);
+
             inicioHorario(clave);
             clave.save(function(err) {
               if (err) res.send(err);
