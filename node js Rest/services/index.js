@@ -8,23 +8,25 @@ var modeloUsuario = require("../models/usuario");
 
 
 function createToken (user) {
+
 	const payload = {
 	sub: user._id,
 	iat: moment().unix(),
 	exp: moment().add(14, 'days').unix(),
   rol: user.rol,
 	}
-
 	return jwt.encode(payload, config.SECRET_TOKEN)
 }
-
+function decodiToken(token){
+	return jwt.decode(token, config.SECRET_TOKEN)
+}
 const decodeToken = function(token) {
 
 	const decoded = new Promise((resolve, reject)=> {
 		try {
-         
+
          const payload = jwt.decode(token, config.SECRET_TOKEN)
-         
+
          if(payload.exp <= moment().unix()) {
 		reject({
 			status:401,
@@ -44,10 +46,10 @@ const decodeToken = function(token) {
 }
 
 function esAdmin (token) {
-  
-  if (decodeToken(token) !== null)
+
+  if (decodiToken(token) !== null)
   {
-    if(decodeToken(token).rol == "admin")
+    if(decodiToken(token).rol == "admin")
     {
       return true
     }
@@ -57,11 +59,11 @@ function esAdmin (token) {
 }
 
 function esYale (token) {
-  
-  
-  if (decodeToken(token) !== null)
+
+
+  if (decodiToken(token) !== null)
   {
-    if(decodeToken(token).rol == "yale")
+    if(decodiToken(token).rol == "yale")
     {
       return true
     }
@@ -71,11 +73,11 @@ function esYale (token) {
 }
 
 function esSeguridad (token) {
-  
-  
-  if (decodeToken(token) !== null)
+
+
+  if (decodiToken(token) !== null)
   {
-    if(decodeToken(token).rol == "seguridad")
+    if(decodiToken(token).rol == "seguridad")
     {
       return true
     }
@@ -84,10 +86,10 @@ function esSeguridad (token) {
   else return false
 }
 function esPropietario (token) {
-  
-  if (decodeToken(token) !== null)
+
+  if (decodiToken(token) !== null)
   {
-    if(decodeToken(token).rol == "propietario")
+    if(decodiToken(token).rol == "propietario")
     {
       return true
     }
@@ -96,12 +98,13 @@ function esPropietario (token) {
   else return false
 }
 module.exports = {
- 
+
  createToken,
  decodeToken,
  esAdmin,
  esSeguridad,
  esPropietario,
- esYale
+ esYale,
+ decodiToken
 
 }

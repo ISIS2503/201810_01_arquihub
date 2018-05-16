@@ -3,20 +3,26 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
+var usuario = new Schema({
 
-var usuario   = new Schema({
-
-    email: String,
-    name: String,
-    password: String,
-    estado: Boolean,
-    rol: String,
-    estado: Boolean,
-    claves: [{
+  email: String,
+  name: String,
+  password: String,
+  rol: String,
+  estado: Boolean,
+  claves: [
+    {
       type: Schema.Types.ObjectId,
-      ref:'claves'
-    }]
+      ref: 'claves'
+    }
+  ],
+  inmuebles: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'inmuebles'
+    }
+  ]
+
 });
 
 module.exports = mongoose.model('usuarios', usuario);
-
