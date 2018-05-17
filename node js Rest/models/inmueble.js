@@ -5,8 +5,9 @@ var Schema       = mongoose.Schema;
 
 var inmueble   = new Schema({
     name: String,
-    codigo: String,
+    codigo: Number,
     estado: Boolean,
+    situacion: Number,
     unidad:{
       type: Schema.Types.ObjectId,
       ref:'unidadResidencial'
@@ -18,7 +19,7 @@ var inmueble   = new Schema({
     propietario:{
       type: Schema.Types.ObjectId,
       ref:'usuarios'
-    }
+    },
 });
 
 module.exports = mongoose.model('inmuebles', inmueble);

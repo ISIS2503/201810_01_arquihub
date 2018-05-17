@@ -9,6 +9,7 @@ const services = require('../services');
 var jwt = require('jwt-simple');
 const config = require('../config')
 var auth = require('../middlewares/auth')
+var mongoose = require('mongoose');
 
 module.exports = {
   // servicios de Unidad Residencial
@@ -93,7 +94,6 @@ module.exports = {
     }
   },
   nuevoUnidadInmueble: async (req, res, next) => {
-
     if (services.esAdmin || services.esYale) {
       var {
         unidadId
@@ -106,6 +106,33 @@ module.exports = {
       await unidadRes.save();
       res.status(201).json(newInmueble);
     }
+  },
+  asignarUnidadInmueble: async (req, res, next) => {
+    var {unidadId} = req.params;
+    var {inmuebleId} = req.body.id;
+    var result = await UnidadResidencial.findByIdAndUpdate(unidadId, {$push: {inmuebles:inmuebleId} })
+  },
+  asignarAdminUnidad: async(req, res, next)=>{
+    var {unidadId} = req.params;
+    var adminId = mongoose.Types.ObjectId(req.body.id);
+    var unidad = await UnidadResidencial.findById(unidadId)
+    var admin = await Admin.findById(adminId)
+    unidad.admin = admin
+    await unidad.save()
+    admin.unidadesResidenciales.push(unidad);
+    await admin.save();
+    res.status(200).json(unidad.admin)
+  },
+  asignarSeguridadUnidad: async(req, res, next) =>{
+    var {unidadId} = req.params;
+    var seguridadId = mongoose.Types.ObjectId(req.body.id);
+    var unidad = await UnidadResidencial.findById(unidadId)
+    var segurida = await seguridad.findById(seguridadId)
+    unidad.seguridad = segurida
+    await unidad.save()
+    segurida.unidadesResidenciales.push(unidad);
+    await segurida.save();
+    res.status(200).json(unidad.seguridad)
   },
   board: async (req, res, next) => {
     token = auth.getToken();

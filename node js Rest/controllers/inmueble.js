@@ -66,5 +66,9 @@ module.exports = {
     inmueble.hubs.push(newHub);
     await inmueble.save();
     res.status(201).json(newHub);
+  },
+
+  nuevoInmueble: async(req,res,next)=>{
+
   }
 }

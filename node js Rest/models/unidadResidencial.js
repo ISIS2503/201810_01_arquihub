@@ -18,7 +18,11 @@ var unidadResidencial   = new Schema({
    inmuebles: [{
       type: Schema.Types.ObjectId,
       ref:'inmuebles'
-    }]
+    }],
+    seguridad:{
+      type: Schema.Types.ObjectId,
+      ref:'seguridad'
+    }
 });
 
 module.exports = mongoose.model("unidadesResidenciales", unidadResidencial);

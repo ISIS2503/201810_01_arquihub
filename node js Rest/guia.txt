@@ -14,3 +14,10 @@ Formato de las alarmas
 
    // DELETE =========  DELETE:index$
    // DELETE =========  DELETEALL$
+
+
+   Formato estado cerraduras
+    "1":Estable
+    "2":Cerradura Fuera de Linea
+    "3":Hub fuera de linea
+    "4":Alarma
