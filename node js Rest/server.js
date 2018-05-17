@@ -132,7 +132,7 @@ router.get('/', function(req, res) {
 // more routes for our API will happen here
 
 //AUTHORIZATION
-router.route('/signup').post(userCtrl.signUp);
+router.route('/signup').post(auth.isAuth,userCtrl.signUp, (req,res) => {});
 router.route('/signin').post(userCtrl.logueado);
 router.route('/private').get(auth.isAuth, (req, res) => {
   res.status(200).send({message: 'Tienes acceso'})

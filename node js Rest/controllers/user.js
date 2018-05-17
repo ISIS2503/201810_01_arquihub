@@ -8,18 +8,24 @@ const userModel = require('../models/usuario')
 const service = require('../services')
 const session = require('express-session')
 const validator = require('express-validator')
+var auth = require('../middlewares/auth')
 
 function signUp(req, res) {
+  var token = auth.getToken();
   var user = 1;
   var rol = req.body.rol
-  if (rol == "yale")
+  if (rol == "yale") {
     user = new yaleModel(req.body)
-  else if (rol == "seguridad")
-    user = new secModel(req.body)
-  else if (rol == "admin")
-    user = new adminModel(req.body)
-  else if (rol == "propietario")
-    user = new userModel(req.body)
+  } else if (!service.esYale(token)) {
+    res.status(400).json({error: "No tiene permisos para realizar esta accion"})
+  } else {
+    if (rol == "seguridad")
+      user = new secModel(req.body)
+    else if (rol == "admin")
+      user = new adminModel(req.body)
+    else if (rol == "propietario")
+      user = new userModel(req.body)
+  }
   user.save((err) => {
     if (err)
       res.status(500).send({message: 'Error al crear el usuario: ${err}'})
@@ -39,7 +45,10 @@ const logueado = function(req, res) {
       req.session.user = user
       req.user = user
       user.estado = true;
-      res.status(200).send({message: 'Te has logueado', token: service.createToken(user[0])})
+      res.status(200).send({
+        message: 'Te has logueado',
+        token: service.createToken(user[0])
+      })
     } else {
       secModel.find({
         email: req.body.email,
@@ -51,7 +60,10 @@ const logueado = function(req, res) {
           req.session.user = user
           req.user = user
           user.estado = true;
-          res.status(200).send({message: 'Te has logueado', token: service.createToken(user[0])})
+          res.status(200).send({
+            message: 'Te has logueado',
+            token: service.createToken(user[0])
+          })
         } else {
           adminModel.find({
             email: req.body.email,
@@ -63,7 +75,10 @@ const logueado = function(req, res) {
               req.session.user = user
               req.user = user
               user.estado = true;
-              res.status(200).send({message: 'Te has logueado', token: service.createToken(user[0])})
+              res.status(200).send({
+                message: 'Te has logueado',
+                token: service.createToken(user[0])
+              })
             } else {
               userModel.find({
                 email: req.body.email,
@@ -75,13 +90,21 @@ const logueado = function(req, res) {
                   req.session.user = user
                   req.user = user
                   user.estado = true;
-                  res.status(200).send({message: 'Te has logueado', token: service.createToken(user[0])})
+                  res.status(200).send({
+                    message: 'Te has logueado',
+                    token: service.createToken(user[0])
+                  })
                 }
-              })}
-          })}
+              })
+            }
+          })
+        }
 
-      })}})}
-    module.exports = {
-      signUp,
-      logueado
+      })
     }
+  })
+}
+module.exports = {
+  signUp,
+  logueado
+}
