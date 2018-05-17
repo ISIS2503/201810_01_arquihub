@@ -113,7 +113,8 @@ module.exports = {
     var {unidadId} = req.params;
     var adminId = mongoose.Types.ObjectId(req.body.id);
     var unidad = await UnidadResidencial.findById(unidadId)
-    var admin = await Admin.findById(adminId)
+    try{var admin = await Admin.findById(adminId)}
+    catch(error){res.status(400).json(error)}
     unidad.admin = admin
     await unidad.save()
     admin.unidadesResidenciales.push(unidad);
@@ -124,7 +125,8 @@ module.exports = {
     var {unidadId} = req.params;
     var seguridadId = mongoose.Types.ObjectId(req.body.id);
     var unidad = await UnidadResidencial.findById(unidadId)
-    var segurida = await seguridad.findById(seguridadId)
+    try{var segurida = await seguridad.findById(seguridadId)}
+    catch(error){res.status(400).json(error)}
     unidad.seguridad = segurida
     await unidad.save()
     segurida.unidadesResidenciales.push(unidad);

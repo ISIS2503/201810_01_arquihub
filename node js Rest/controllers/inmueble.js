@@ -73,7 +73,8 @@ module.exports = {
     var {inmuebleId} = req.params;
     var propietarioId = mongoose.Types.ObjectId(req.body.id);
     var inmueble = await Inmueble.findById(inmuebleId)
-    var propietario = await modeloUsuario.findById(propietarioId)
+    try{var propietario = await modeloUsuario.findById(propietarioId)}
+    catch(err){res.status(400).json(error)}
     inmueble.propietario = propietario
     await inmueble.save()
     propietario.inmuebles.push(inmueble);
