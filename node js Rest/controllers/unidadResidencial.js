@@ -123,7 +123,6 @@ module.exports = {
       for(i =0;i < inmuebles.length; i++)
       {
         console.log(inmuebles[i])
-
         var este = await Inmueble.findById(inmuebles[i])
           if(este != null)
             inmueblesAr[i] = este;
