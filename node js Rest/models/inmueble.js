@@ -14,7 +14,11 @@ var inmueble   = new Schema({
     hubs: [{
       type: Schema.Types.ObjectId,
       ref:'hubs'
-    }]
+    }],
+    propietario:{
+      type: Schema.Types.ObjectId,
+      ref:'usuarios'
+    }
 });
 
 module.exports = mongoose.model('inmuebles', inmueble);

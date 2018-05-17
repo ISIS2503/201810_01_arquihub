@@ -1,11 +1,10 @@
-https://scotch.io/tutorials/build-a-restful-api-using-node-and-express-4#our-application
+
 
 
 Formato de las alarmas
-  //  "name": String
-  //  "codigo": String
-  //  "descripcion": String
-  //  "date": String
+    "tipo":Number  /////  "1":Alarma, "2":HealthCheck
+    "subt":Number  ////   "1":Nivel de Bateria Critico, "2":Puerta abierta más de 30 segundos, "3":Intento de apertura fallido, "4":Intento de apertura sospechoso
+
 
 
   //Formato de la publicación de las claves

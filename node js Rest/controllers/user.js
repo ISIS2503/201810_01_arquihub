@@ -18,7 +18,7 @@ function signUp(req, res) {
     user = new secModel(req.body)
   else if (rol == "admin")
     user = new adminModel(req.body)
-  else if (user == "propietario")
+  else if (rol == "propietario")
     user = new userModel(req.body)
   user.save((err) => {
     if (err)

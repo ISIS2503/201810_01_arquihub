@@ -2,6 +2,7 @@ var UnidadResidencial = require('../models/unidadResidencial');
 var Inmueble = require('../models/inmueble');
 var modeloUsuario = require("../models/usuario");
 var Admin = require("../models/admin");
+var seguridad = require("../models/seguridad")
 var Hub = require('../models/hub');
 var Cerradura = require('../models/cerradura');
 const services = require('../services');
@@ -15,7 +16,6 @@ module.exports = {
 
     //Obtengo el token de la peticion
     token = auth.getToken();
-    console.log(services.decodiToken(token))
     if (services.esYale(token)) {
       console.log('get unidades yale')
       var todasUnidades = await UnidadResidencial.find({});
@@ -27,13 +27,11 @@ module.exports = {
     }
     else if (services.esSeguridad(token)) {
       console.log('get unidades seguridad')
-      var unidades = await Admin.findById(services.decodeToken.user).populate('unidadesResidenciales');
+      var unidades = await seguridad.findById(services.decodeToken.user).populate('unidadesResidenciales');
       res.status(200).json(unidades);
     }
     else if(services.esPropietario(token)){
-      console.log('get unidades propietario')
-      var unidades = await Admin.findById(services.decodeToken.user).populate('unidadesResidenciales');
-      res.status(200).json(unidades);
+      res.status(400).json({error: 'Un propietario no puede ver información de las unidades residenciales'});
     }
   },
   nuevaUnidad: async (req, res, next) => {

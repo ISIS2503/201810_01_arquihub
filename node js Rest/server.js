@@ -307,7 +307,7 @@ router.route('/barrios/:barrioId/unidadResidencial')
     .post(barrioController.nuevaUnidadBarrio);
 router.route('/barrios/:idBarrio/mensual')
     .get(barrioController.alarmasMensualPorBarrio);
- 
+
 
 //Consultar alarmas mensuales para unidad Residencial
 router.route('/alarmas/mensualUnidad/:idUnidad').get(function(req, res) {
@@ -384,7 +384,7 @@ router.route('/unidadResidencial/:unidadId/inmuebles').get(unidadController.darU
 
 // ruta de /inmuebles
 // ----------------------------------------------------
-router.route('/inmuebles').get(inmuebleController.inmuebles);
+router.route('/inmuebles').get(auth.isAuth, inmuebleController.inmuebles, (req,res) => {});
 router.route('/inmuebles/:inmuebleId').get(inmuebleController.darInmueble).put(inmuebleController.editarInmueble);
 router.route('/inmuebles/:inmuebleId/estado').put(inmuebleController.editarEstadoInmueble);
 router.route('/inmuebles/:inmuebleId/hubs').get(inmuebleController.darInmuebleHubs).post(inmuebleController.nuevoInmuebleHub);
@@ -405,7 +405,7 @@ router.route('/cerraduras/:cerraduraId')
 router.route('/cerraduras/:cerraduraId/estado')
     .put(cerraduraController.editarEstadoCerradura);
 router.route('/cerraduras/:cerraduraId/alarma')
-    .post(cerraduraController.nuevaAlarmaCerradura);   
+    .post(cerraduraController.nuevaAlarmaCerradura);
 router.route('/cerraduras').get(cerraduraController.cerraduras);
 router.route('/cerraduras/:cerraduraId').get(cerraduraController.darCerradura).put(cerraduraController.editarCerradura);
 router.route('/cerraduras/:cerraduraId/estado').put(cerraduraController.editarEstadoCerradura);
