@@ -10,6 +10,7 @@ const services = require('../services');
 var jwt = require('jwt-simple');
 const config = require('../config')
 var auth = require('../middlewares/auth')
+var mongoose = require('mongoose');
 
 module.exports = {
 
@@ -67,7 +68,18 @@ module.exports = {
     await inmueble.save();
     res.status(201).json(newHub);
   },
+  asignarPropietario: async(req, res, next)=>{
 
+    var {inmuebleId} = req.params;
+    var propietarioId = mongoose.Types.ObjectId(req.body.id);
+    var inmueble = await Inmueble.findById(inmuebleId)
+    var propietario = await modeloUsuario.findById(propietarioId)
+    inmueble.propietario = propietario
+    await inmueble.save()
+    propietario.inmuebles.push(inmueble);
+    await propietario.save();
+    res.status(200).json(inmueble.propietario)
+  },
   nuevoInmueble: async(req,res,next)=>{
 
   }

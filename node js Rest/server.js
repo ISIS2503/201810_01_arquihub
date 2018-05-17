@@ -229,6 +229,7 @@ router.route('/inmuebles').get(auth.isAuth, inmuebleController.inmuebles, (req, 
 router.route('/inmuebles/:inmuebleId').get(inmuebleController.darInmueble).put(inmuebleController.editarInmueble);
 router.route('/inmuebles/:inmuebleId/estado').put(inmuebleController.editarEstadoInmueble);
 router.route('/inmuebles/:inmuebleId/hubs').get(inmuebleController.darInmuebleHubs).post(inmuebleController.nuevoInmuebleHub);
+router.route('/inmuebles/:inmuebleId/asignarPropietario').post(inmuebleController.asignarPropietario);
 // ruta de /hubs
 // ----------------------------------------------------
 router.route('/hubs').get(hubController.hubs);

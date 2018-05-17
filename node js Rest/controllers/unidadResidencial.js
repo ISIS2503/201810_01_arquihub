@@ -108,9 +108,6 @@ module.exports = {
     }
   },
   asignarUnidadInmueble: async (req, res, next) => {
-    var {unidadId} = req.params;
-    var {inmuebleId} = req.body.id;
-    var result = await UnidadResidencial.findByIdAndUpdate(unidadId, {$push: {inmuebles:inmuebleId} })
   },
   asignarAdminUnidad: async(req, res, next)=>{
     var {unidadId} = req.params;
