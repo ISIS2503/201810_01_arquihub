@@ -24,13 +24,11 @@ module.exports = {
       console.log('get unidades de un admin');
       var unidades = await Admin.findById(services.decodeToken.user).populate('unidadesResidenciales');
       res.status(200).json(unidades);
-    }
-    else if (services.esSeguridad(token)) {
+    } else if (services.esSeguridad(token)) {
       console.log('get unidades seguridad')
       var unidades = await seguridad.findById(services.decodeToken.user).populate('unidadesResidenciales');
       res.status(200).json(unidades);
-    }
-    else if(services.esPropietario(token)){
+    } else if (services.esPropietario(token)) {
       res.status(400).json({error: 'Un propietario no puede ver información de las unidades residenciales'});
     }
   },
@@ -108,5 +106,30 @@ module.exports = {
       await unidadRes.save();
       res.status(201).json(newInmueble);
     }
+  },
+  board: async (req, res, next) => {
+    token = auth.getToken();
+    if (!services.esSeguridad(token)) {
+      res.status(400).json({error: "No tiene permisos para ver esta unidad"})
+    }
+    var {
+      unidadId
+    } = req.params;
+    var unidad = await UnidadResidencial.findById(unidadId);
+    var inmuebles = unidad.inmuebles
+    var inmueblesAr = []
+    if(inmuebles.length > 0)
+    {
+      for(i =0;i < inmuebles.length; i++)
+      {
+        console.log(inmuebles[i])
+
+        var este = await Inmueble.findById(inmuebles[i])
+          if(este != null)
+            inmueblesAr[i] = este;
+      }
+
+    }
+    res.status(200).json({unidad: unidad, inmuebles: inmueblesAr})
   }
 }
