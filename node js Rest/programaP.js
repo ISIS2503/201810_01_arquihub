@@ -1,5 +1,6 @@
 var mqtt = require('mqtt') // importar mqtt
-var client = mqtt.connect('mqtt://m14.cloudmqtt.com:15871',{username:	'ttoxzhcr', password:	'L7dlgbCgXVm-'})
+//var client = mqtt.connect('mqtt://m14.cloudmqtt.com:15871',{username:	'ttoxzhcr', password:	'L7dlgbCgXVm-'})
+var client = mqtt.connect('mqtt://172.24.42.92:8083')
 var express = require('express'); // call express
 var app = express(); // define our app using express
 var bodyParser = require('body-parser');

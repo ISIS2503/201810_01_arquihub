@@ -5,6 +5,7 @@ var Admin = require("../models/admin");
 var seguridad = require("../models/seguridad")
 var Hub = require('../models/hub');
 var Cerradura = require('../models/cerradura');
+var cerraduraController = require('../controllers/cerradura')
 const services = require('../services');
 var jwt = require('jwt-simple');
 const config = require('../config')
@@ -76,7 +77,7 @@ module.exports = {
     cerri.situacion = 4;
     cerri.alarmas.push(alarma)
     await cerri.save()
-
+    cerraduraController.cerraduraEnAlarma(req.body.id,cerri.situacion)
     res.status(200).json(resp);
   },
   llegoHealthCheck: async (req, res, next)=>{

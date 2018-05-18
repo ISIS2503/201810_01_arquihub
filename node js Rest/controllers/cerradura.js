@@ -43,15 +43,16 @@ module.exports = {
     await cerradura.save();
     res.status(201).json(cerradura);
   },
-  cerraduraEnAlarma: async (codigo) => {
+  cerraduraEnAlarma: async (codigo, situacion) => {
     var cerra = await Cerradura.find({
       codigo: codigo
     }, '_id')
-    var cerri = await Cerradura.findByIdAndUpdate(cerra[0]._id, {situacion: 4})
+    var cerri = await Cerradura.findByIdAndUpdate(cerra[0]._id, {situacion: situacion})
+    if(situacion == 4){
     setTimeout(async () => {
       console.log("cerró");
       await Cerradura.findByIdAndUpdate(cerra[0]._id, {situacion: 1})
-    }, 30000)
+    }, 30000)}
   }
 
 }

@@ -100,7 +100,7 @@ cadaSegundo = setInterval(loop1sec, 1000);
 //Health Checks recibidos de las cerraduras, loop de un segundo para el health check
 function loop1sec() {
   if (tiempoSinHealthCheck > 60) {
-    cerraduraController.cerraduraEnAlarma(1);
+    cerraduraController.cerraduraEnAlarma(1, 2);
     console.log("\n CERRADURA FUERA DE SERVICIO \n Tiempo sin servicio aproximado: " + tiempoSinHealthCheck)
     clearInterval(cadaSegundo);
     return;
