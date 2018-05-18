@@ -50,7 +50,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 var port = process.env.PORT || 8080; // set our port
-
+/**
 // CONEXION A TOPICO MQTT
 // ==============================================================================
 client.on('connect', function() { //Cuando se conecte
@@ -94,25 +94,30 @@ client.on('message', function(topic, message) { //Cuando haya un mensaje
   console.log('Mensaje:  ' + message.toString())
   console.log("===========================================================================")
 })
+**/
 cadaSegundo = setInterval(loop1sec, 1000);
 
 //Health Checks recibidos de las cerraduras, loop de un segundo para el health check
 function loop1sec() {
   if (tiempoSinHealthCheck > 60) {
+    cerraduraController.cerraduraEnAlarma(1);
     console.log("\n CERRADURA FUERA DE SERVICIO \n Tiempo sin servicio aproximado: " + tiempoSinHealthCheck)
     clearInterval(cadaSegundo);
-    //cerrarInterval();
-
     return;
-  }
-  //console.log("Tiempo: "+tiempoSinHealthCheck)
+  } else if (tiempoSinHealthCheck == 30)
+    console.log("HUB FUERA DE LINEA POR 30 SEG")
+    //console.log("Tiempo: "+tiempoSinHealthCheck)
+  console.log(tiempoSinHealthCheck)
   tiempoSinHealthCheck++;
-}
-function reiniciarInterval() {
-  tiempoSinHealthCheck = 0;
-  cadaSegundo = setInterval(loop1sec, 1000);
+
 }
 
+var reiniciarIntervalo = function() {
+  if (tiempoSinHealthCheck > 60) {
+    cadaSegundo = setInterval(loop1sec, 1000)
+  }
+  tiempoSinHealthCheck = 0;
+}
 // ROUTES FOR OUR API
 // =============================================================================
 var router = express.Router(); // get an instance of the express Router
@@ -132,7 +137,7 @@ router.get('/', function(req, res) {
 // more routes for our API will happen here
 
 //AUTHORIZATION
-router.route('/signup').post(auth.isAuth,userCtrl.signUp, (req,res) => {});
+router.route('/signup').post(auth.isAuth, userCtrl.signUp, (req, res) => {});
 router.route('/signin').post(userCtrl.logueado);
 router.route('/private').get(auth.isAuth, (req, res) => {
   res.status(200).send({message: 'Tienes acceso'})
@@ -169,13 +174,6 @@ router.route('/alarmas/mensual/:idInmueble').get(function(req, res) {
   })
 });
 
-//rutas para barrios
-router.route('/barrios').get(barrioController.barrios).post(barrioController.nuevoBarrio);
-router.route('/barrios/:nombreBarrio').get(barrioController.darBarrioNombre);
-router.route('/barrios/:barrioId').get(barrioController.darBarrio).put(barrioController.editarBarrio).delete(barrioController.borrarBarrio);
-router.route('/barrios/:barrioId/unidadResidencial').get(barrioController.darUnidadesBarrio).post(barrioController.nuevaUnidadBarrio);
-router.route('/barrios/:idBarrio/mensual').get(barrioController.alarmasMensualPorBarrio);
-
 //Consultar alarmas mensuales para unidad Residencial
 router.route('/alarmas/mensualUnidad/:idUnidad').get(function(req, res) {
   var cutoff = new Date();
@@ -201,10 +199,19 @@ router.route('/alarmas/mensualUnidad/:idUnidad').get(function(req, res) {
   })
 });
 
-router.route('/alarmas').get(auth.isAuth,alarmaController.alarmas, (req,res) =>{});
+router.route('/alarmas').get(auth.isAuth, alarmaController.alarmas, (req, res) => {});
+router.route('/alerta').post(auth.isAuth, alarmaController.llegoAlarma, (req, res) => {});
+router.route('/healthcheck').post(auth.isAuth, alarmaController.llegoHealthCheck, (req, res) => {});
 //ruta para claves
 router.route('/claves').get(claveController.claves).post(claveController.nuevaClave).delete(claveController.deleteClaves);
 router.route('/claves/:claveId').delete(claveController.deleteClave).put(claveController.editclave);
+
+//rutas para barrios
+router.route('/barrios').get(barrioController.barrios).post(barrioController.nuevoBarrio);
+router.route('/barrios/:nombreBarrio').get(barrioController.darBarrioNombre);
+router.route('/barrios/:barrioId').get(barrioController.darBarrio).put(barrioController.editarBarrio).delete(barrioController.borrarBarrio);
+router.route('/barrios/:barrioId/unidadResidencial').get(barrioController.darUnidadesBarrio).post(barrioController.nuevaUnidadBarrio);
+router.route('/barrios/:idBarrio/mensual').get(barrioController.alarmasMensualPorBarrio);
 
 // ruta de usuarios
 // ----------------------------------------------------
@@ -219,7 +226,7 @@ router.route('/unidadResidencial').get(auth.isAuth, unidadController.unidades, (
 router.route('/unidadResidencial/:unidadId').get(unidadController.darUnidad).put(auth.isAuth, unidadController.editarUnidad, (req, res) => {}).delete(auth.isAuth, unidadController.borrarUnidad, (req, res) => {});
 router.route('/unidadResidencial/:unidadId/estado').put(unidadController.editarEstadoUnidad);
 router.route('/unidadResidencial/:unidadId/inmuebles').get(unidadController.darUnidadInmuebles).post(unidadController.nuevoUnidadInmueble);
-router.route('/unidadResidencial/:unidadId/board').get(auth.isAuth, unidadController.board,(req,res)=>{});
+router.route('/unidadResidencial/:unidadId/board').get(auth.isAuth, unidadController.board, (req, res) => {});
 router.route('/unidadResidencial/:unidadId/asignarAdmin').post(unidadController.asignarAdminUnidad)
 router.route('/unidadResidencial/:unidadId/asignarSeguridad').post(unidadController.asignarSeguridadUnidad)
 
@@ -255,3 +262,5 @@ app.use('/api', router);
 // =============================================================================
 app.listen(port);
 console.log('Magic happens on port ' + port);
+
+exports.reiniciarIntervalo = reiniciarIntervalo

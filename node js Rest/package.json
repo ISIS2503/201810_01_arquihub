@@ -14,6 +14,7 @@
     "express-session": "^1.15.6",
     "express-validate": "0.0.8",
     "express-validator": "^5.2.0",
+    "json-parser": "^1.1.5",
     "jwt-simple": "^0.5.1",
     "moment": "^2.22.1",
     "mongoose": "^5.0.11",

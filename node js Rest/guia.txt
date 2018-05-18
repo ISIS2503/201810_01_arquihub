@@ -2,7 +2,7 @@
 Formato de las alarmas
     "tipo":Number  /////  "1":Alarma, "2":HealthCheck
     "subt":Number  ////   "1":Nivel de Bateria Critico, "2":Puerta abierta más de 30 segundos, "3":Intento de apertura fallido, "4":Intento de apertura sospechoso
-    "id":Number    ////  Number: Codigo de donde proviene la alarma/healthcheck
+    "id":Number    ////  Number: Codigo de la cerradura donde proviene la alarma/healthcheck
 
 
 

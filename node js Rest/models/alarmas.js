@@ -5,8 +5,9 @@ var Schema       = mongoose.Schema;
 
 var alarmas   = new Schema({
 
-    tipo: String,
-    codigo: String,
+    tipo: Number,
+    codigo: Number,
+    subtipo: Number,
     fecha: Date,
     descripcion: String,
     cerradura:{

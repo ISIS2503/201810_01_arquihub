@@ -10,10 +10,11 @@ var jwt = require('jwt-simple');
 const config = require('../config')
 var auth = require('../middlewares/auth')
 var alarmas = require('../models/alarmas')
+var server = require('../server')
 
 module.exports = {
   alarmas: async (req, res, err) => {
-    token = auth.getToken()
+    var token = auth.getToken()
     var id = services.decodiToken(token).u
     if (services.esYale(token)) {
       console.log('get unidades yale')
@@ -58,5 +59,27 @@ module.exports = {
         }
       }
     }
+  },
+  llegoAlarma: async (req, res, next) =>{
+    var token = auth.getToken()
+    if(!services.esYale(token)){
+      res.status(400).json({error: "No tiene autorización para realizar la accion"})
+    }
+    var alarma = new alarmas()
+    alarma.tipo = req.body.tipo
+    alarma.subtipo = req.body.subt
+    var cerra = await Cerradura.find({codigo:req.body.id}, '_id')
+    var cerri = await Cerradura.findById(cerra[0]._id)
+    alarma.cerradura = cerra[0]._id
+    alarma.fecha = new Date();
+    var resp = await alarma.save();
+    cerri.situacion = 4;
+    cerri.alarmas.push(alarma)
+    await cerri.save()
+
+    res.status(200).json(resp);
+  },
+  llegoHealthCheck: async (req, res, next)=>{
+    server.reiniciarIntervalo()
   }
 }
