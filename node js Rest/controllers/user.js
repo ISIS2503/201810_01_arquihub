@@ -10,7 +10,7 @@ const session = require('express-session')
 const validator = require('express-validator')
 var auth = require('../middlewares/auth')
 
-function signUp(req, res) {
+const signUp =function(req, res) {
   var token = auth.getToken();
   var user = 1;
   var rol = req.body.rol
@@ -99,12 +99,26 @@ const logueado = function(req, res) {
             }
           })
         }
-
       })
     }
   })
 }
+var loginDashboard = function(username, password) {
+
+  secModel.find({
+    email: username,
+    password: password
+  }, (err, user) => {
+    if (err) {
+      return false;
+    }
+    else if (user.length > 0) {
+      return true;
+    }
+  });
+}
 module.exports = {
   signUp,
-  logueado
+  logueado,
+  loginDashboard
 }

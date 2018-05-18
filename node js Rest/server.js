@@ -12,31 +12,42 @@ var cerraduraController = require('./controllers/cerradura');
 var claveController = require('./controllers/clave');
 var barrioController = require('./controllers/barrio');
 var usuarioController = require('./controllers/usuario');
+var alarmaController = require('./controllers/alarma')
+
 var express = require('express'); // call express
 var app = express(); // define our app using express
+
 var bodyParser = require('body-parser');
-var mongoose = require('mongoose');
 const session = require('express-session');
 const validator = require('express-validator');
 const hbs = require('express-handlebars');
+
+var mongoose = require('mongoose');
 var url = 'mongodb://localhost:27017/ArquiHub';
+
 var mqtt = require('mqtt') // importar mqtt
 var client = mqtt.connect('mqtt://172.24.42.92:8083')
-var alarmaController = require('./controllers/alarma')
+
 app.engine('.hbs', hbs({defaultLayout: 'default', extname: '.hbs'}))
 app.set('view engine', '.hbs');
 app.use('/healthcheck', require('express-healthcheck'));
 app.use(validator());
 app.use(session({secret: "hs982y4htewforwi", resave: false, saveUninitialized: true}));
+
 const auth = require('./middlewares/auth');
 const userCtrl = require('./controllers/user');
+
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
+var portSS = process.env.PORT || 3000;
+var path = require('path');
 
 //Variables para el Health check
 var tiempoSinHealthCheck = 0;
 var cadaSegundo;
 
 //CONEXIÓN A BASE DE DATOS
-// =================================================================================
+// =============================================================================
 mongoose.connect(url, function(err, db) {
   if (err)
     throw err;
@@ -50,51 +61,9 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 var port = process.env.PORT || 8080; // set our port
-/**
-// CONEXION A TOPICO MQTT
-// ==============================================================================
-client.on('connect', function() { //Cuando se conecte
-  console.log('Se conectó a MQTT');
-  client.subscribe('claves')
-  client.subscribe('pruebaMQTT')
-  client.publish('pruebaMQTT', 'Prueba MQTT Correcta')
-  client.subscribe('alarmas')
-  client.subscribe('HealthCheck')
 
-  //client.publish('unidadResidencial/inmueble/hub/cerradura/api')
-})
 
-client.on('message', function(topic, message) { //Cuando haya un mensaje
-  //message is Buffer
-  console.log("=======================MENSAJE RECIBIDO EN MQTT=============================")
-  console.log('Topico: ' + topic);
-  if (topic == alarmas) {
-    var obj = JSON.parse(message);
-    if (obj.body.tipo = 1) {
-      var alarma = new alarmas(obj.body); // create a new instance of the Bear model
-      alarma.save(function(err) {
-        if (err)
-          res.send(err);
-        res.json({message: 'Alarma created!'});
-      })
-      client.publish('alarma', message)
-    } else {
-      console.log(obj);
-      tiempoSinHealthCheck = 0;
-      clearInterval(cadaSegundo);
-      setTimeout(reiniciarInterval, 1)
-      client.publish('alarma', message)
-    };
-  } else if (topic == 'HealthCheck') {
-    //  tiempoSinHealthCheck = 0;
-    //  clearInterval(cadaSegundo);
-    //  setTimeout(reiniciarInterval, 1)
-    //  client.publish('alarma', message)
-  }
-  console.log('Mensaje:  ' + message.toString())
-  console.log("===========================================================================")
-})
-**/
+// =============================================================================
 cadaSegundo = setInterval(loop1sec, 1000);
 
 //Health Checks recibidos de las cerraduras, loop de un segundo para el health check
@@ -137,14 +106,16 @@ router.get('/', function(req, res) {
 // more routes for our API will happen here
 
 //AUTHORIZATION
-router.route('/signup').post(auth.isAuth, userCtrl.signUp, (req, res) => {});
+// =============================================================================
+
+router.route('/signup').post(auth.isAuth, userCtrl.signUp);
 router.route('/signin').post(userCtrl.logueado);
 router.route('/private').get(auth.isAuth, (req, res) => {
   res.status(200).send({message: 'Tienes acceso'})
 })
 
-// on routes that end in /ALARMAS
-// ----------------------------------------------------
+// rutas sericios REST
+// =============================================================================
 
 router.route('/alarmas/silenciar').post(function(req, res) {
   client.publish('alarma', req.body);
@@ -263,4 +234,66 @@ app.use('/api', router);
 app.listen(port);
 console.log('Magic happens on port ' + port);
 
-exports.reiniciarIntervalo = reiniciarIntervalo
+exports.reiniciarIntervalo = reiniciarIntervalo;
+// web Socket
+// =============================================================================
+
+server.listen(portSS, () => {
+  console.log('Server Socket listening at port ', portSS);
+});
+// Routing
+app.use(express.static(path.join(__dirname, 'public')));
+// Chatroom
+
+var numUsers = 0;
+
+io.on('connection', (socket) => {
+  var addedUser = false;
+
+  // when the client emits 'new message', this listens and executes
+  socket.on('new message', (data) => {
+    // we tell the client to execute 'new message'
+    socket.broadcast.emit('new message', {
+      username: socket.username,
+      message: data
+    });
+  });
+
+  // when the client emits 'add user', this listens and executes
+  socket.on('login', (username, password) => {
+
+    // we store the username in the socket session for this client
+    var acceso =userCtrl.loginDashboard;
+    if(acceso){
+      socket.username = username;
+      ++numUsers;
+      socket.emit('complete_login', {
+        numUsers: numUsers
+      });
+      // echo globally (all clients) that a person has connected
+      socket.broadcast.emit('user joined', {
+        username: socket.username,
+        numUsers: numUsers
+      });
+    }
+    else{
+      socket.emit('login_error', {
+        numUsers: numUsers
+      });
+    }
+
+  });
+
+  // when the user disconnects.. perform this
+  socket.on('disconnect', () => {
+    if (addedUser) {
+      --numUsers;
+
+      // echo globally that this client has left
+      socket.broadcast.emit('user left', {
+        username: socket.username,
+        numUsers: numUsers
+      });
+    }
+  });
+});
