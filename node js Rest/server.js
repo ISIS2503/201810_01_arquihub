@@ -116,6 +116,7 @@ var reiniciarIntervalo = function() {
   if (tiempoSinHealthCheck > 60) {
     cadaSegundo = setInterval(loop1sec, 1000)
   }
+  cerraduraController.cerraduraEnAlarma(1, 1);
   tiempoSinHealthCheck = 0;
 }
 // ROUTES FOR OUR API
