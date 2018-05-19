@@ -12,6 +12,9 @@ const config = require('../config')
 var auth = require('../middlewares/auth')
 var alarmas = require('../models/alarmas')
 var server = require('../server')
+var request = require('request');var express = require('express'); // call express
+var app = express(); // define our app using express
+var bodyParser = require('body-parser');
 
 module.exports = {
   alarmas: async (req, res, err) => {

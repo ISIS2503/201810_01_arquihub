@@ -1,3 +1,4 @@
+var token;
 $(function() {
   var FADE_TIME = 150; // ms
 
@@ -17,6 +18,7 @@ $(function() {
   var password;
   var connected = false;
   var $currentInput = $usernameInput.focus();
+  
 
   var socket = io();
 
@@ -31,7 +33,16 @@ $(function() {
       socket.emit('login', username, password);
     }
   }
+  const logi = () => {
+    username = cleanInput($usernameInput.val().trim());
+    password = cleanInput($passwordInput.val().trim());
 
+    // If the username is valid
+    if (username && password) {
+      // Tell the server your username
+      socket.emit('logi', username, password);
+    }
+  }
   const completeLogin =  () => {
     // If the username is valid
       $loginPage.fadeOut();
@@ -149,7 +160,7 @@ $(function() {
       if (username) {
         sendMessage();
       } else {
-        login();
+        logi();
       }
     }
   });
@@ -185,6 +196,18 @@ $(function() {
     loginError();
   });
 
+  socket.on('tokens', (data) =>{
+
+  })
+
+  //////////////////////////////////////////////
+  //Login que está funcionando en este momento
+  socket.on('prueba', (data)=>{
+    completeLogin();
+    connected = true;
+    token = data
+    socket.emit('prueba', data)
+  })
   // Whenever the server emits 'new message', update the chat body
   socket.on('new message', (data) => {
     addChatMessage(data);

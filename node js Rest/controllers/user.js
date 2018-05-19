@@ -9,6 +9,9 @@ const service = require('../services')
 const session = require('express-session')
 const validator = require('express-validator')
 var auth = require('../middlewares/auth')
+var request = require('request');var express = require('express'); // call express
+var app = express(); // define our app using express
+var bodyParser = require('body-parser');
 
 const signUp =function(req, res) {
   var token = auth.getToken();
@@ -49,6 +52,7 @@ const logueado = function(req, res) {
         message: 'Te has logueado',
         token: service.createToken(user[0])
       })
+
     } else {
       secModel.find({
         email: req.body.email,
@@ -122,8 +126,26 @@ function loginDashboard (username, password,callback){
 function darInmueblePropietarioInfo(){
 
 }
+
+function signInFront(username, password, callback){
+  // Configure the request
+  var bodyxd = {email: username, password:password}
+  var options = {
+      url: 'http://172.24.42.123:8080/api/signin',
+      method: 'POST',
+      json:bodyxd
+  }
+  // Start the request
+  request(options, function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+          // Print out the response body
+          callback(null, body.token)
+      }
+  })
+}
 module.exports = {
   signUp,
   logueado,
-  loginDashboard
+  loginDashboard,
+  signInFront
 }

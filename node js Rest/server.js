@@ -240,7 +240,7 @@ exports.reiniciarIntervalo = reiniciarIntervalo;
 // =============================================================================
 
 server.listen(portSS, () => {
-  console.log('Server Socket listening at port ', portSS);
+  console.log('Server Socket listening at ip '+ io.httpServer +'port ', portSS);
 });
 // Routing
 app.use(express.static(path.join(__dirname, 'public')));
@@ -286,7 +286,18 @@ io.on('connection', (socket) => {
 
 
   });
+  socket.on('logi', (username, password) => {
+    var acceso = userCtrl.signInFront(username, password, function(err, result){
+      if(result != null){
+        socket.emit('prueba', result);
+        socket.emit('tokeni', result);
+      }
+    })
+  });
 
+  socket.on('prueba', (data) => {
+    console.log("token:   " + data)
+  });
   // when the user disconnects.. perform this
   socket.on('disconnect', () => {
     if (addedUser) {
