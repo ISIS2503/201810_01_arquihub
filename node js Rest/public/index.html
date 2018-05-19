@@ -93,14 +93,9 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script type="text/javascript">
   //Script que hace todo relacionado con sign in, token, get unidades
-  dios();
-  //setInterval(function(){
-  //  console.log("lo hace")
-  //  $('#modalitos').empty();
-  //  $('#inmuebless').empty();
-  //  dios();
-  //},10000)
-   function dios(){
+
+
+  function dios(){
   //Variable para manejar el token del sign in
   var tokens;
   //Variable para manejar el json de la unidad
@@ -227,7 +222,8 @@
         //}, "json")
     }
   });
-}
+};
+dios();
   </script>
 
 
@@ -244,20 +240,6 @@
 
 
 
-<script>
-$(document).ready(function(){
-    $("button").click(function(){
-        $.post('http://172.24.42.123:8080/api/signin',
-        {
-          name: document.getElementById("frm1"),
-          city: "Duckburg"
-        },
-        function(data,status){
-            alert("Data: " + data + "\nStatus: " + status);
-        });
-    });
-});
-</script>
 </body>
 
 </html>
