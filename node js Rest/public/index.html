@@ -76,6 +76,11 @@
 
     </div>
     <!-- /.container -->
+
+    <!-- /. modals -->
+    <div id="modalitos" class="noimporta">
+
+    </div>
     <!-- Footer -->
     <footer class="py-5 bg-dark">
       <div class="container">
@@ -88,7 +93,14 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script type="text/javascript">
   //Script que hace todo relacionado con sign in, token, get unidades
-
+  dios();
+  //setInterval(function(){
+  //  console.log("lo hace")
+  //  $('#modalitos').empty();
+  //  $('#inmuebless').empty();
+  //  dios();
+  //},10000)
+   function dios(){
   //Variable para manejar el token del sign in
   var tokens;
   //Variable para manejar el json de la unidad
@@ -101,8 +113,8 @@
      url: "http://172.24.42.123:8080/api/unidadResidencial/5afd8e023869b9c7bc1d302d/board",
      headers: {'Authorization' : 'Bearer '+tokens},
      type: "GET",
-     success: function(result, status) { console.log(JSON.stringify(result));
-     console.log(result.unidad); console.log(result.inmuebles); unidad = result.unidad ; inmuebles = result.inmuebles },
+     success: function(result, status) {
+     unidad = result.unidad ; inmuebles = result.inmuebles },
      error: function(status, error) { console.log(error);}
   }).done(function(){construir();});
   }
@@ -119,7 +131,7 @@
        success:(function(result, status){}),
        error: function(status, error) { console.log(error);}
     }).done(function(result){
-      console.log(result.name)
+
       if(typeof result.name !== "undefined")
         propio = result;
       else{
@@ -164,9 +176,7 @@
       + "</div>"
       + "</div>";
      $("#inmuebless").append(htmlstring);
-     $("#contenid").append(modalString);
-     console.log("html:   "+htmlstring);
-     console.log("modal:   "+modalString);
+     $("#modalitos").append(modalString);
     });
 
 
@@ -178,7 +188,7 @@
   user.addEventListener("keyup", function(event) {
     event.preventDefault();
     if (event.keyCode === 13) {
-        console.log(user.value + ":" + pass.value);
+
         $.post('http://172.24.42.123:8080/api/signin',
         {
           email: user.value,
@@ -186,7 +196,7 @@
         },
         function(data,status){
             tokens = data.token
-            console.log(data.token);
+
             getTodo();
         }, "json");
 
@@ -195,7 +205,7 @@
   pass.addEventListener("keyup", function(event) {
     event.preventDefault();
     if (event.keyCode === 13) {
-        console.log(user.value + ":" + pass.value);
+
         $.post('http://172.24.42.123:8080/api/signin',
         {
           email: user.value,
@@ -203,7 +213,7 @@
         },
         function(data,status){
           tokens = data.token
-          console.log(data.token);
+
           getTodo()
         }, "json");
         //$.ajaxSetup({
@@ -217,9 +227,12 @@
         //}, "json")
     }
   });
-
-
+}
   </script>
+
+
+
+
   <script src="vendor/jquery/jquery.min.js"></script>
   <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
