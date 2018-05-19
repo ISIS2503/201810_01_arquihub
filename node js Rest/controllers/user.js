@@ -103,18 +103,20 @@ const logueado = function(req, res) {
     }
   })
 }
-var loginDashboard = function(username, password) {
+function loginDashboard (username, password,callback){
 
   secModel.find({
     email: username,
     password: password
   }, (err, user) => {
-    if (err) {
-      return false;
+    if (user.length > 0) {
+      console.log("usuario encontrado" + user[0]);
+      callback(null, true);
     }
-    else if (user.length > 0) {
-      return true;
+    else{
+      callback(null, false);
     }
+
   });
 }
 module.exports = {
