@@ -151,7 +151,7 @@
   var inmuebles;
   function getTodo(){
     $.ajax({
-     url: "http://localhost:8080/api/unidadResidencial/5afd8e023869b9c7bc1d302d/board",
+     url: "http://172.24.42.123:8080/api/unidadResidencial/5afd8e023869b9c7bc1d302d/board",
      headers: {'Authorization' : 'Bearer '+tokens},
      type: "GET",
      success: function(result, status) { console.log(JSON.stringify(result));
@@ -187,7 +187,7 @@
     event.preventDefault();
     if (event.keyCode === 13) {
         console.log(user.value + ":" + pass.value);
-        $.post('http://localhost:8080/api/signin',
+        $.post('http://172.24.42.123:8080/api/signin',
         {
           email: user.value,
           password: pass.value
@@ -204,7 +204,7 @@
     event.preventDefault();
     if (event.keyCode === 13) {
         console.log(user.value + ":" + pass.value);
-        $.post('http://localhost:8080/api/signin',
+        $.post('http://172.24.42.123:8080/api/signin',
         {
           email: user.value,
           password: pass.value
@@ -220,7 +220,7 @@
         // }
         //});
 
-        //$.get(' http://localhost:8080/api/unidadResidencial/5afd8e023869b9c7bc1d302d/board', function(data){
+        //$.get(' http://172.24.42.123:8080/api/unidadResidencial/5afd8e023869b9c7bc1d302d/board', function(data){
         //  console.log("estaverga" +data)
         //}, "json")
     }
@@ -242,7 +242,7 @@
 <script>
 $(document).ready(function(){
     $("button").click(function(){
-        $.post('http://localhost:8080/api/signin',
+        $.post('http://172.24.42.123:8080/api/signin',
         {
           name: document.getElementById("frm1"),
           city: "Duckburg"
