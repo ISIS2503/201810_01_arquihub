@@ -156,5 +156,13 @@ module.exports = {
 
     }
     res.status(200).json({unidad: unidad, inmuebles: inmueblesAr})
+  },
+  propietarioInmueble: async (req, res, next) => {
+    var {
+      idinmueble
+    } = req.params.inmuebleId;
+    var propietario = await Inmueble.findById(req.params.inmuebleId)
+    var rta = await modeloUsuario.findById(propietario.propietario)
+    res.status(200).send(rta)
   }
 }

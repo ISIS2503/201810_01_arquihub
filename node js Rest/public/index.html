@@ -24,9 +24,9 @@
       <li class="login page">
         <div id="form1" class="form">
           <h3 class="title">Username:</h3>
-          <input id="usern" class="usernameInput" type="text" maxlength="25" value="esto" />
+          <input id="usern" class="usernameInput" type="text" maxlength="25" value="segu@gmail.com" />
           <h3 class="title">Password:</h3>
-          <input id="passw" class="passwordInput" type="password" maxlength="15" />
+          <input id="passw" class="passwordInput" type="password" maxlength="15" value="Yalepassword" />
         </div>
       </li>
     </ul>
@@ -121,6 +121,7 @@
   var unidad;
   //Variable para manejar el json de los inmuebles de la unidad
   var inmuebles;
+
   function getTodo(){
     $.ajax({
      url: "http://172.24.42.123:8080/api/unidadResidencial/5afd8e023869b9c7bc1d302d/board",
@@ -135,6 +136,24 @@
   function construir(){
 
     $.each(inmuebles,function(key,$datum){
+      var propio ={ name:"",
+    email:""};
+      $.ajax({
+       url: "http://172.24.42.123:8080/api/inmuebles/"+ inmuebles[key]._id +"/propietario",
+       headers: {'Authorization' : 'Bearer '+tokens},
+       type: "GET",
+       success:(function(result, status){}),
+       error: function(status, error) { console.log(error);}
+    }).done(function(result){
+      console.log(result.name)
+      if(typeof result.name !== "undefined")
+        propio = result;
+      else{
+        propio.name = "No disponible"
+        propio.email = "No disponible"
+      }
+
+
       var img;
       var htmlstring = "hola";
       var modalString = "";
@@ -161,6 +180,8 @@
       + "<div class=\"modal-body\">"
       + "<p>" + "Nombre del Inmueble: " + inmuebles[key].name +" </p>"
       + "<p>" + "Situación del Inmueble" + inmuebles[key].situacion +" </p>"
+      + "<p>" + "Nombre del Propietario: " + propio.name +" </p>"
+      + "<p>" + "Nombre del Inmueble: " + propio.email +" </p>"
       + "</div>"
       + "<div class=\"modal-footer\">"
       + "<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>"
@@ -172,6 +193,9 @@
      $("#contenid").append(modalString);
      console.log("html:   "+htmlstring);
      console.log("modal:   "+modalString);
+    });
+
+
   });
   }
   var user = document.getElementById("usern");

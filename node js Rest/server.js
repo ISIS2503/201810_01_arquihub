@@ -199,6 +199,7 @@ router.route('/unidadResidencial/:unidadId').get(unidadController.darUnidad).put
 router.route('/unidadResidencial/:unidadId/estado').put(unidadController.editarEstadoUnidad);
 router.route('/unidadResidencial/:unidadId/inmuebles').get(unidadController.darUnidadInmuebles).post(unidadController.nuevoUnidadInmueble);
 router.route('/unidadResidencial/:unidadId/board').get(auth.isAuth, unidadController.board, (req, res) => {});
+router.route('/inmuebles/:inmuebleId/propietario').get(unidadController.propietarioInmueble);
 router.route('/unidadResidencial/:unidadId/asignarAdmin').post(unidadController.asignarAdminUnidad)
 router.route('/unidadResidencial/:unidadId/asignarSeguridad').post(unidadController.asignarSeguridadUnidad)
 
