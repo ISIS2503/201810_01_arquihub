@@ -21,3 +21,6 @@ Formato de las alarmas
     "2":Cerradura Fuera de Linea
     "3":Hub fuera de linea
     "4":Alarma
+
+
+idInmueble: 5afdbddf5a57fddf48fb5591

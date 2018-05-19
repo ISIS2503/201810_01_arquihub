@@ -1,6 +1,17 @@
 var Hub = require('../models/hub');
 var Cerradura = require('../models/cerradura');
+var inm = require('../controllers/inmueble')
 
+var hubEnAlarma = async (id, situacion) => {
+  var hub = await Hub.findById(id);
+  var cerri = await Hub.findByIdAndUpdate(id, {situacion: situacion})
+  var inmuebleenalarma = await inm.inmuebleEnAlarma(hub.inmueble)
+  if(situacion == 4){
+  setTimeout(async () => {
+    console.log("cerró");
+    await Hub.findByIdAndUpdate(id, {situacion: 1})
+  }, 30000)}
+}
 module.exports = {
 
   hubs: async(req,res,next) =>{
@@ -40,5 +51,16 @@ module.exports = {
     hub.cerraduras.push(newCerradura);
     await hub.save();
     res.status(201).json(newCerradura);
+  },
+  hubEnAlarma,
+  hubEnAlarmas : async (id, situacion) => {
+    var hub = await Hub.findById(id);
+    var cerri = await Hub.findByIdAndUpdate(id, {situacion: situacion})
+    var inmuebleenalarma = await inm.inmuebleEnAlarma(hub.inmueble, situacion)
+    if(situacion == 4){
+    setTimeout(async () => {
+      console.log("cerró");
+      await Hub.findByIdAndUpdate(id, {situacion: 1})
+    }, 30000)}
   }
 }

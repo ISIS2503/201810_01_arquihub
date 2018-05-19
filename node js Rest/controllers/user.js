@@ -119,6 +119,9 @@ function loginDashboard (username, password,callback){
 
   });
 }
+function darInmueblePropietarioInfo(){
+
+}
 module.exports = {
   signUp,
   logueado,

@@ -81,7 +81,13 @@ module.exports = {
     await propietario.save();
     res.status(200).json(inmueble.propietario)
   },
-  nuevoInmueble: async(req,res,next)=>{
-
+  inmuebleEnAlarma: async (id, situacion) => {
+    var inmue = await Inmueble.findById(id);
+    var cerri = await Inmueble.findByIdAndUpdate(id, {situacion: situacion})
+    if(situacion == 4){
+    setTimeout(async () => {
+      console.log("cerró");
+      await Inmueble.findByIdAndUpdate(id, {situacion: 1})
+    }, 30000)}
   }
 }

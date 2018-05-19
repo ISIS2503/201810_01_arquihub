@@ -1,5 +1,6 @@
 var Cerradura = require('../models/cerradura');
 var Alarma = require('../models/alarmas');
+var hub = require('../controllers/hub')
 
 module.exports = {
 
@@ -47,7 +48,9 @@ module.exports = {
     var cerra = await Cerradura.find({
       codigo: codigo
     }, '_id')
+    var cerradur = await Cerradura.find({codigo: codigo})
     var cerri = await Cerradura.findByIdAndUpdate(cerra[0]._id, {situacion: situacion})
+    var hubenalarma = await hub.hubEnAlarmas(cerradur[0].hub, situacion)
     if(situacion == 4){
     setTimeout(async () => {
       console.log("cerró");
