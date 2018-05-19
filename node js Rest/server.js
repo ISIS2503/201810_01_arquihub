@@ -264,24 +264,26 @@ io.on('connection', (socket) => {
   socket.on('login', (username, password) => {
 
     // we store the username in the socket session for this client
-    var acceso =userCtrl.loginDashboard;
-    if(acceso){
-      socket.username = username;
-      ++numUsers;
-      socket.emit('complete_login', {
-        numUsers: numUsers
-      });
-      // echo globally (all clients) that a person has connected
-      socket.broadcast.emit('user joined', {
-        username: socket.username,
-        numUsers: numUsers
-      });
-    }
-    else{
-      socket.emit('login_error', {
-        numUsers: numUsers
-      });
-    }
+    var acceso =  userCtrl.loginDashboard(username, password, function(err, result){
+      if(result){
+        socket.username = username;
+        ++numUsers;
+        socket.emit('complete_login', {
+          numUsers: numUsers
+        });
+        // echo globally (all clients) that a person has connected
+        socket.broadcast.emit('user joined', {
+          username: socket.username,
+          numUsers: numUsers
+        });
+      }
+      else{
+        socket.emit('login_error', {
+          numUsers: numUsers
+        });
+      }
+    });
+
 
   });
 
