@@ -16,58 +16,6 @@
   <!-- Custom styles for this template -->
   <link href="css/thumbnail-gallery.css" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
-  <style>
-    /* The Modal (background) */
-
-    .modal {
-      display: none;
-      /* Hidden by default */
-      position: fixed;
-      /* Stay in place */
-      z-index: 1;
-      /* Sit on top */
-      padding-top: 100px;
-      /* Location of the box */
-      left: 0;
-      top: 0;
-      width: 100%;
-      /* Full width */
-      height: 100%;
-      /* Full height */
-      overflow: auto;
-      /* Enable scroll if needed */
-      background-color: rgb(0, 0, 0);
-      /* Fallback color */
-      background-color: rgba(0, 0, 0, 0.4);
-      /* Black w/ opacity */
-    }
-
-    /* Modal Content */
-
-    .modal-content {
-      background-color: #fefefe;
-      margin: auto;
-      padding: 20px;
-      border: 1px solid #888;
-      width: 80%;
-    }
-
-    /* The Close Button */
-
-    .close {
-      color: #aaaaaa;
-      float: right;
-      font-size: 28px;
-      font-weight: bold;
-    }
-
-    .close:hover,
-    .close:focus {
-      color: #000;
-      text-decoration: none;
-      cursor: pointer;
-    }
-  </style>
 </head>
 
 <body>
@@ -113,7 +61,7 @@
     </nav>
 
     <!-- Page Content -->
-    <div class="container">
+    <div id="contenid" class="container">
 
       <h1 class="my-4 text-center text-lg-left">Unidad Residencial</h1>
 
@@ -121,15 +69,39 @@
 
         <div class="col-md-2">
           <h1>Piso 1</h1>
-        </div>
 
+        </div>
+        <div class="col-md-2">
+        <a class="mb-4 h-100">
+          <img class="btn btn-info btn-lg img-fluid" data-toggle="modal" data-target="#myModal58" src="images/online.png" alt="">
+        </a>
+        </div>
 
 
       </div>
 
     </div>
     <!-- /.container -->
+    <!-- Modal -->
+<div id="myModal58" class="modal fade" role="dialog">
+  <div class="modal-dialog">
 
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Modal Header</h4>
+      </div>
+      <div class="modal-body">
+        <p>Some text in the modal.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
     <!-- Footer -->
     <footer class="py-5 bg-dark">
       <div class="container">
@@ -165,6 +137,7 @@
     $.each(inmuebles,function(key,$datum){
       var img;
       var htmlstring = "hola";
+      var modalString = "";
       if(inmuebles[key].situacion == 1)
         {img = "\"images/online.png\"";}
       else if(inmuebles[key].situacion == 4)
@@ -172,12 +145,33 @@
       else
         {img = "\"images/error.png\"";}
      htmlstring = "<div class=\"col-md-2\">"+
-                          "<a id=" + inmuebles[key]._id +" " + "class=\"d-block mb-4 h-100\">"+
-                          "<img class=\"img-fluid\" src=" + img + "alt=\"\"" + ">" +
+                          "<a id=" + "\""+inmuebles[key]._id + "\" " + "class=\"d-block mb-4 h-100\">"+
+                          "<img class=\"btn btn-info btn-lg img-fluid\" data-toggle=\"modal\" data-target=\"#myModal"+ inmuebles[key]._id  + "\" src=" + img + "alt=\"\"" + ">" +
                           "</a>"
                     +"</div>";
-      console.log(htmlstring);
+      modalString = "<div id=\"myModal" + inmuebles[key]._id + "\" class=\"modal fade\" role=\"dialog\">"
+      + "<div class=\"modal-dialog\">"
+
+      //Aqui empieza el modal content
+      + "<div class =\"modal-content\">"
+      + "<div class=\"modal-header\">"
+      + "<button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button>"
+      + "<h4 class=\"modal-title\">Inmueble" + inmuebles[key]._id + "</h4>"
+      + "</div>"
+      + "<div class=\"modal-body\">"
+      + "<p>" + "Nombre del Inmueble: " + inmuebles[key].name +" </p>"
+      + "<p>" + "Situación del Inmueble" + inmuebles[key].situacion +" </p>"
+      + "</div>"
+      + "<div class=\"modal-footer\">"
+      + "<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>"
+      + "</div>"
+      + "</div>"
+      + "</div>"
+      + "</div>";
      $("#inmuebless").append(htmlstring);
+     $("#contenid").append(modalString);
+     console.log("html:   "+htmlstring);
+     console.log("modal:   "+modalString);
   });
   }
   var user = document.getElementById("usern");
