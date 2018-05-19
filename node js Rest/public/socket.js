@@ -163,6 +163,12 @@ $(function() {
       function(data,status){
           tokens = data.token
           getTodo();
+          setInterval(function(){
+            console.log("iteracion")
+            $("#inmuebless").empty();
+            $("#modalitos").empty();
+            getTodo();
+          }, 10000)
       }, "json");
 
       login();
@@ -193,7 +199,8 @@ $(function() {
     }).done(function(){construir();});
   }
   function construir(){
-
+    var strings = "<div class=\"col-md-2\"><h1>Piso 1</h1></div>";
+    $("#inmuebless").append(strings);
     $.each(inmuebles,function(key,$datum){
       var propio ={ name:"",
     email:""};
@@ -224,7 +231,7 @@ $(function() {
         {img = "\"images/error.png\"";}
      htmlstring = "<div class=\"col-md-2\">"+
                           "<a id=" + "\""+inmuebles[key]._id + "\" " + "class=\"d-block mb-4 h-100\">"+
-                          "<img class=\"btn btn-info btn-lg img-fluid\" data-toggle=\"modal\" data-target=\"#myModal"+ inmuebles[key]._id  + "\" src=" + img + "alt=\"\"" + ">" +
+                          "<img class=\"btn btn-lg img-fluid\" data-toggle=\"modal\" data-target=\"#myModal"+ inmuebles[key]._id  + "\" src=" + img + "alt=\"\"" + ">" +
                           "</a>"
                     +"</div>";
       modalString = "<div id=\"myModal" + inmuebles[key]._id + "\" class=\"modal fade\" role=\"dialog\">"
@@ -249,6 +256,7 @@ $(function() {
       + "</div>"
       + "</div>"
       + "</div>";
+
      $("#inmuebless").append(htmlstring);
      $("#modalitos").append(modalString);
     });
