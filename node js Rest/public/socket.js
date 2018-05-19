@@ -7,6 +7,9 @@ $(function() {
   var $window = $(window);
   var $usernameInput = $('.usernameInput'); // Input for username
   var $passwordInput = $('.passwordInput'); // Input for password
+  var user = document.getElementById("usern");
+  var pass = document.getElementById("passw");
+
   var $messages = $('.messages'); // Messages area
   var $inputMessage = $('.inputMessage'); // Input message input box
 
@@ -18,7 +21,12 @@ $(function() {
   var password;
   var connected = false;
   var $currentInput = $usernameInput.focus();
-  
+  var tokens;
+  //Variable para manejar el json de la unidad
+  var unidad;
+  //Variable para manejar el json de los inmuebles de la unidad
+  var inmuebles;
+
 
   var socket = io();
 
@@ -31,16 +39,6 @@ $(function() {
     if (username && password) {
       // Tell the server your username
       socket.emit('login', username, password);
-    }
-  }
-  const logi = () => {
-    username = cleanInput($usernameInput.val().trim());
-    password = cleanInput($passwordInput.val().trim());
-
-    // If the username is valid
-    if (username && password) {
-      // Tell the server your username
-      socket.emit('logi', username, password);
     }
   }
   const completeLogin =  () => {
@@ -157,11 +155,18 @@ $(function() {
 
     // When the client hits ENTER on their keyboard
     if (event.which === 13) {
-      if (username) {
-        sendMessage();
-      } else {
-        logi();
-      }
+      $.post('http://172.24.42.123:8080/api/signin',
+      {
+        email: user.value,
+        password: pass.value
+      },
+      function(data,status){
+          tokens = data.token
+          getTodo();
+      }, "json");
+
+      login();
+
     }
   });
 
@@ -177,6 +182,78 @@ $(function() {
   $inputMessage.click(() => {
     $inputMessage.focus();
   });
+  function getTodo(){
+      $.ajax({
+       url: "http://172.24.42.123:8080/api/unidadResidencial/5afd8e023869b9c7bc1d302d/board",
+       headers: {'Authorization' : 'Bearer '+tokens},
+       type: "GET",
+       success: function(result, status) {
+       unidad = result.unidad ; inmuebles = result.inmuebles },
+       error: function(status, error) { console.log(error);}
+    }).done(function(){construir();});
+  }
+  function construir(){
+
+    $.each(inmuebles,function(key,$datum){
+      var propio ={ name:"",
+    email:""};
+      $.ajax({
+       url: "http://172.24.42.123:8080/api/inmuebles/"+ inmuebles[key]._id +"/propietario",
+       headers: {'Authorization' : 'Bearer '+tokens},
+       type: "GET",
+       success:(function(result, status){}),
+       error: function(status, error) { console.log(error);}
+    }).done(function(result){
+
+      if(typeof result.name !== "undefined")
+        propio = result;
+      else{
+        propio.name = "No disponible"
+        propio.email = "No disponible"
+      }
+
+
+      var img;
+      var htmlstring = "hola";
+      var modalString = "";
+      if(inmuebles[key].situacion == 1)
+        {img = "\"images/online.png\"";}
+      else if(inmuebles[key].situacion == 4)
+        {img = "\"images/fail.png\"";}
+      else
+        {img = "\"images/error.png\"";}
+     htmlstring = "<div class=\"col-md-2\">"+
+                          "<a id=" + "\""+inmuebles[key]._id + "\" " + "class=\"d-block mb-4 h-100\">"+
+                          "<img class=\"btn btn-info btn-lg img-fluid\" data-toggle=\"modal\" data-target=\"#myModal"+ inmuebles[key]._id  + "\" src=" + img + "alt=\"\"" + ">" +
+                          "</a>"
+                    +"</div>";
+      modalString = "<div id=\"myModal" + inmuebles[key]._id + "\" class=\"modal fade\" role=\"dialog\">"
+      + "<div class=\"modal-dialog\">"
+
+      //Aqui empieza el modal content
+      + "<div class =\"modal-content\">"
+      + "<div class=\"modal-header\">"
+      + "<button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button>"
+      + "<h4 class=\"modal-title\">Inmueble: " + inmuebles[key]._id + "</h4>"
+      + "</div>"
+      + "<div class=\"modal-body\">"
+      + "<p>" + "<b>Nombre del Inmueble: </b>" + inmuebles[key].name +" </p>"
+      + "<p>" + "<b>Situación del Inmueble: </b>" + inmuebles[key].situacion +" </p>"
+      + "<h3>Contacto</h3>"
+      + "<p>" + "<b>Nombre del Propietario: </b>" + propio.name +" </p>"
+      + "<p>" + "<b>Nombre del Inmueble: </b>" + propio.email +" </p>"
+      + "</div>"
+      + "<div class=\"modal-footer\">"
+      + "<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>"
+      + "</div>"
+      + "</div>"
+      + "</div>"
+      + "</div>";
+     $("#inmuebless").append(htmlstring);
+     $("#modalitos").append(modalString);
+    });
+  });
+  }
 
   // Socket events
 
@@ -242,3 +319,4 @@ $(function() {
   });
 
 });
+//Script que hace todo relacionado con sign in, token, get unidades

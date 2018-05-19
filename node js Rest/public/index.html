@@ -35,25 +35,22 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
       <div class="container">
-        <a class="navbar-brand" href="">Start Bootstrap</a>
+        <a class="navbar-brand" href="">ArquiHub</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item active">
-              <a class="nav-link" href="#">Home
+              <a class="nav-link" >Inicio
                 <span class="sr-only">(current)</span>
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">About</a>
+              <a class="nav-link" >Services</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Services</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Contact</a>
+              <a class="nav-link" href="">Logout</a>
             </li>
           </ul>
         </div>
@@ -69,7 +66,6 @@
 
         <div class="col-md-2">
           <h1>Piso 1</h1>
-
         </div>
 
       </div>
@@ -84,151 +80,13 @@
     <!-- Footer -->
     <footer class="py-5 bg-dark">
       <div class="container">
-        <p class="m-0 text-center text-white">Copyright &copy; Your Website 2017</p>
+        <p class="m-0 text-center text-white">Copyright &copy; ArquiHub Yale System 2018</p>
       </div>
       <!-- /.container -->
     </footer>
   </section>
   <!-- Bootstrap core JavaScript -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script type="text/javascript">
-  //Script que hace todo relacionado con sign in, token, get unidades
-
-
-  function dios(){
-  //Variable para manejar el token del sign in
-  var tokens;
-  //Variable para manejar el json de la unidad
-  var unidad;
-  //Variable para manejar el json de los inmuebles de la unidad
-  var inmuebles;
-
-  function getTodo(){
-    $.ajax({
-     url: "http://172.24.42.123:8080/api/unidadResidencial/5afd8e023869b9c7bc1d302d/board",
-     headers: {'Authorization' : 'Bearer '+tokens},
-     type: "GET",
-     success: function(result, status) {
-     unidad = result.unidad ; inmuebles = result.inmuebles },
-     error: function(status, error) { console.log(error);}
-  }).done(function(){construir();});
-  }
-
-  function construir(){
-
-    $.each(inmuebles,function(key,$datum){
-      var propio ={ name:"",
-    email:""};
-      $.ajax({
-       url: "http://172.24.42.123:8080/api/inmuebles/"+ inmuebles[key]._id +"/propietario",
-       headers: {'Authorization' : 'Bearer '+tokens},
-       type: "GET",
-       success:(function(result, status){}),
-       error: function(status, error) { console.log(error);}
-    }).done(function(result){
-
-      if(typeof result.name !== "undefined")
-        propio = result;
-      else{
-        propio.name = "No disponible"
-        propio.email = "No disponible"
-      }
-
-
-      var img;
-      var htmlstring = "hola";
-      var modalString = "";
-      if(inmuebles[key].situacion == 1)
-        {img = "\"images/online.png\"";}
-      else if(inmuebles[key].situacion == 4)
-        {img = "\"images/fail.png\"";}
-      else
-        {img = "\"images/error.png\"";}
-     htmlstring = "<div class=\"col-md-2\">"+
-                          "<a id=" + "\""+inmuebles[key]._id + "\" " + "class=\"d-block mb-4 h-100\">"+
-                          "<img class=\"btn btn-info btn-lg img-fluid\" data-toggle=\"modal\" data-target=\"#myModal"+ inmuebles[key]._id  + "\" src=" + img + "alt=\"\"" + ">" +
-                          "</a>"
-                    +"</div>";
-      modalString = "<div id=\"myModal" + inmuebles[key]._id + "\" class=\"modal fade\" role=\"dialog\">"
-      + "<div class=\"modal-dialog\">"
-
-      //Aqui empieza el modal content
-      + "<div class =\"modal-content\">"
-      + "<div class=\"modal-header\">"
-      + "<button type=\"button\" class=\"close\" data-dismiss=\"modal\">&times;</button>"
-      + "<h4 class=\"modal-title\">Inmueble: " + inmuebles[key]._id + "</h4>"
-      + "</div>"
-      + "<div class=\"modal-body\">"
-      + "<p>" + "Nombre del Inmueble: " + inmuebles[key].name +" </p>"
-      + "<p>" + "Situación del Inmueble: " + inmuebles[key].situacion +" </p>"
-      + "<p>" + "Nombre del Propietario: " + propio.name +" </p>"
-      + "<p>" + "Nombre del Inmueble: " + propio.email +" </p>"
-      + "</div>"
-      + "<div class=\"modal-footer\">"
-      + "<button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">Close</button>"
-      + "</div>"
-      + "</div>"
-      + "</div>"
-      + "</div>";
-     $("#inmuebless").append(htmlstring);
-     $("#modalitos").append(modalString);
-    });
-
-
-  });
-  }
-  var user = document.getElementById("usern");
-  var pass = document.getElementById("passw");
-
-  user.addEventListener("keyup", function(event) {
-    event.preventDefault();
-    if (event.keyCode === 13) {
-
-        $.post('http://172.24.42.123:8080/api/signin',
-        {
-          email: user.value,
-          password: pass.value
-        },
-        function(data,status){
-            tokens = data.token
-
-            getTodo();
-        }, "json");
-
-    }
-  });
-  pass.addEventListener("keyup", function(event) {
-    event.preventDefault();
-    if (event.keyCode === 13) {
-
-        $.post('http://172.24.42.123:8080/api/signin',
-        {
-          email: user.value,
-          password: pass.value
-        },
-        function(data,status){
-          tokens = data.token
-
-          getTodo()
-        }, "json");
-        //$.ajaxSetup({
-        // headers:{
-        //  'Authorization': "Bearer "+ tokens
-        // }
-        //});
-
-        //$.get(' http://172.24.42.123:8080/api/unidadResidencial/5afd8e023869b9c7bc1d302d/board', function(data){
-        //  console.log("estaverga" +data)
-        //}, "json")
-    }
-  });
-};
-dios();
-  </script>
-
-
-
-
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="vendor/jquery/jquery.min.js"></script>
   <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
